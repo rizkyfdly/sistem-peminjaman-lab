@@ -6,6 +6,8 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\DetailPeminjamanController;
 use App\Http\Controllers\SopBarangController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +17,45 @@ use App\Http\Controllers\SopBarangController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+|--------------------------------------------------------------------------
+| AUTH LOGIN
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
+
+// 🔐 INI MIDDLEWARE
+Route::middleware('auth')->group(function () {
+
+    Route::get('/', function () {
+        return view('welcome');
+    });
+
+    Route::resource('barang', BarangController::class);
+    Route::resource('users', UserController::class);
+
+});
+
+// 🔐 INI MIDDLEWARE KHUSUS ADMIN
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('users', UserController::class);
+});
+
+// 🔐 INI MIDDLEWARE USER + ADMIN (SEMUA LOGIN)
+Route::middleware(['auth'])->group(function () {
+    Route::resource('barang', BarangController::class);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| USER
+|--------------------------------------------------------------------------
+*/
+Route::resource('users', UserController::class);
 
 /*
 |--------------------------------------------------------------------------
