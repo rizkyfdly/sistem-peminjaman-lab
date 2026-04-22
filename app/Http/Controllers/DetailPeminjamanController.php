@@ -19,7 +19,7 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * FORM TAMBAH DETAIL (OPSIONAL MANUAL)
+     * FORM TAMBAH DETAIL
      */
     public function create()
     {
@@ -30,7 +30,7 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * SIMPAN DETAIL PEMINJAMAN
+     * SIMPAN DETAIL PEMINJAMAN + KURANGI STOK
      */
     public function store(Request $request)
     {
@@ -40,6 +40,18 @@ class DetailPeminjamanController extends Controller
             'jumlah' => 'required|integer|min:1',
         ]);
 
+        $barang = Barang::findOrFail($request->barang_id);
+
+        // CEK STOK
+        if ($barang->stok < $request->jumlah) {
+            return back()->with('error', 'Stok tidak mencukupi');
+        }
+
+        // KURANGI STOK
+        $barang->stok -= $request->jumlah;
+        $barang->save();
+
+        // SIMPAN DETAIL
         DetailPeminjaman::create([
             'peminjaman_id' => $request->peminjaman_id,
             'barang_id' => $request->barang_id,
@@ -50,7 +62,7 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * LIHAT DETAIL PER PEMINJAMAN
+     * LIHAT DETAIL BERDASARKAN PEMINJAMAN
      */
     public function byPeminjaman($id)
     {
@@ -64,7 +76,7 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * EDIT DETAIL
+     * FORM EDIT DETAIL
      */
     public function edit($id)
     {
@@ -75,7 +87,7 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * UPDATE DETAIL
+     * UPDATE DETAIL + SESUAIKAN STOK
      */
     public function update(Request $request, $id)
     {
@@ -85,6 +97,21 @@ class DetailPeminjamanController extends Controller
             'jumlah' => 'required|integer|min:1',
         ]);
 
+        $barang = Barang::findOrFail($detail->barang_id);
+
+        // BALIKKAN STOK LAMA
+        $barang->stok += $detail->jumlah;
+
+        // CEK STOK BARU
+        if ($barang->stok < $request->jumlah) {
+            return back()->with('error', 'Stok tidak mencukupi');
+        }
+
+        // KURANGI STOK BARU
+        $barang->stok -= $request->jumlah;
+        $barang->save();
+
+        // UPDATE DETAIL
         $detail->update([
             'jumlah' => $request->jumlah
         ]);
@@ -93,11 +120,18 @@ class DetailPeminjamanController extends Controller
     }
 
     /**
-     * HAPUS DETAIL
+     * HAPUS DETAIL + KEMBALIKAN STOK
      */
     public function destroy($id)
     {
-        DetailPeminjaman::findOrFail($id)->delete();
+        $detail = DetailPeminjaman::findOrFail($id);
+
+        // KEMBALIKAN STOK
+        $barang = Barang::findOrFail($detail->barang_id);
+        $barang->stok += $detail->jumlah;
+        $barang->save();
+
+        $detail->delete();
 
         return redirect()->back()->with('success', 'Detail berhasil dihapus');
     }

@@ -93,7 +93,14 @@ Route::post('/peminjaman/{id}/kembali', [PeminjamanController::class, 'pengembal
 |--------------------------------------------------------------------------
 */
 Route::get('/detail-peminjaman', [DetailPeminjamanController::class, 'index']);
-Route::get('/detail-peminjaman/{id}', [DetailPeminjamanController::class, 'show']);
+Route::get('/detail-peminjaman/create', [DetailPeminjamanController::class, 'create']);
+Route::post('/detail-peminjaman', [DetailPeminjamanController::class, 'store']);
+Route::get('/detail-peminjaman/{id}/edit', [DetailPeminjamanController::class, 'edit']);
+Route::put('/detail-peminjaman/{id}', [DetailPeminjamanController::class, 'update']);
+Route::delete('/detail-peminjaman/{id}', [DetailPeminjamanController::class, 'destroy']);
+
+// route custom
+Route::get('/detail-peminjaman/peminjaman/{id}', [DetailPeminjamanController::class, 'byPeminjaman']);
 
 /*
 |--------------------------------------------------------------------------
@@ -101,4 +108,11 @@ Route::get('/detail-peminjaman/{id}', [DetailPeminjamanController::class, 'show'
 |--------------------------------------------------------------------------
 */
 Route::get('/sop', [SopBarangController::class, 'index']);
-Route::get('/sop/{id}', [SopBarangController::class, 'showByBarang']);
+Route::get('/sop/create', [SopBarangController::class, 'create']);
+Route::post('/sop', [SopBarangController::class, 'store']);
+Route::get('/sop/{id}/edit', [SopBarangController::class, 'edit']);
+Route::put('/sop/{id}', [SopBarangController::class, 'update']);
+Route::delete('/sop/{id}', [SopBarangController::class, 'destroy']);
+
+// detail per barang (custom)
+Route::get('/sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang']);

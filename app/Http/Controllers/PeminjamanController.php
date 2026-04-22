@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Peminjaman;
 use App\Models\DetailPeminjaman;
 use App\Models\Barang;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -24,12 +25,14 @@ class PeminjamanController extends Controller
      */
     public function create()
     {
+        $users = User::all();
         $barang = Barang::all();
-        return view('peminjaman.create', compact('barang'));
+
+        return view('peminjaman.create', compact('users', 'barang'));
     }
 
     /**
-     * SIMPAN PEMINJAMAN
+     * SIMPAN PEMINJAMAN + KURANGI STOK
      */
     public function store(Request $request)
     {
@@ -45,12 +48,24 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::create([
             'kode_transaksi' => $kode,
             'user_id' => $request->user_id,
-            'tanggal_pinjam' => Carbon::now()->toDateString(),
-            'jam_pinjam' => Carbon::now()->toTimeString(),
+            'tanggal_pinjam' => now()->toDateString(),
+            'jam_pinjam' => now()->toTimeString(),
             'status' => 'diajukan',
         ]);
 
         foreach ($request->barang as $item) {
+            $barang = Barang::findOrFail($item['id']);
+
+            // CEK STOK
+            if ($barang->stok < $item['jumlah']) {
+                return back()->with('error', 'Stok ' . $barang->nama_barang . ' tidak cukup');
+            }
+
+            // KURANGI STOK
+            $barang->stok -= $item['jumlah'];
+            $barang->save();
+
+            // SIMPAN DETAIL
             DetailPeminjaman::create([
                 'peminjaman_id' => $peminjaman->id,
                 'barang_id' => $item['id'],
@@ -71,15 +86,51 @@ class PeminjamanController extends Controller
     }
 
     /**
-     * APPROVE PEMINJAMAN (ADMIN)
+     * FORM EDIT
+     */
+    public function edit($id)
+    {
+        $peminjaman = Peminjaman::with('detail.barang')->findOrFail($id);
+        $users = User::all();
+
+        return view('peminjaman.edit', compact('peminjaman', 'users'));
+    }
+
+    /**
+     * UPDATE (AMAN)
+     */
+    public function update(Request $request, $id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'status' => 'required|in:diajukan,disetujui,ditolak,dipinjam,dikembalikan',
+        ]);
+
+        $peminjaman->update([
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
+
+        return redirect('/peminjaman')->with('success', 'Peminjaman diupdate');
+    }
+
+    /**
+     * APPROVE
      */
     public function approve($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status != 'diajukan') {
+            return back()->with('error', 'Status tidak valid');
+        }
+
         $peminjaman->status = 'disetujui';
         $peminjaman->save();
 
-        return redirect()->back();
+        return back();
     }
 
     /**
@@ -88,10 +139,15 @@ class PeminjamanController extends Controller
     public function pinjam($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status != 'disetujui') {
+            return back()->with('error', 'Harus disetujui dulu');
+        }
+
         $peminjaman->status = 'dipinjam';
         $peminjaman->save();
 
-        return redirect()->back();
+        return back();
     }
 
     /**
@@ -99,13 +155,22 @@ class PeminjamanController extends Controller
      */
     public function pengembalian(Request $request, $id)
     {
+        $request->validate([
+            'kondisi' => 'required'
+        ]);
+
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $peminjaman->tanggal_kembali = Carbon::now()->toDateString();
-        $peminjaman->jam_kembali = Carbon::now()->toTimeString();
+        if ($peminjaman->status != 'dipinjam') {
+            return back()->with('error', 'Barang belum dipinjam');
+        }
+
+        $peminjaman->tanggal_kembali = now()->toDateString();
+        $peminjaman->jam_kembali = now()->toTimeString();
         $peminjaman->status = 'dikembalikan';
         $peminjaman->kondisi_kembali = $request->kondisi;
 
+        // DENDA
         $denda = 0;
 
         if ($request->kondisi == 'rusak ringan') {
@@ -119,6 +184,6 @@ class PeminjamanController extends Controller
         $peminjaman->denda = $denda;
         $peminjaman->save();
 
-        return redirect()->back()->with('success', 'Barang dikembalikan');
+        return back()->with('success', 'Barang dikembalikan');
     }
 }
