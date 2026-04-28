@@ -7,12 +7,8 @@
 <form action="/peminjaman" method="POST">
     @csrf
 
-    <label>User:</label>
-    <select name="user_id">
-        @foreach($users as $u)
-            <option value="{{ $u->id }}">{{ $u->nama }}</option>
-        @endforeach
-    </select>
+    <p>User: {{ auth()->user()->name }}</p>
+    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
 
     <br><br>
 

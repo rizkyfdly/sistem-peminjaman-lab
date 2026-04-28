@@ -4,6 +4,12 @@
     <title>Edit Barang</title>
 </head>
 <body>
+    
+@if(auth()->user()->role != 'admin')
+    <h3>Akses ditolak</h3>
+    <a href="/barang">Kembali</a>
+    @php exit; @endphp
+@endif    
 
 <h2>✏️ Edit Barang</h2>
 

@@ -17,21 +17,29 @@ class BarangController extends Controller
     }
 
     /**
-     * FORM TAMBAH BARANG
+     * FORM TAMBAH BARANG (ADMIN SAJA)
      */
     public function create()
     {
+        if (auth()->user()->role != 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
         return view('barang.create');
     }
 
     /**
-     * SIMPAN BARANG
+     * SIMPAN BARANG (ADMIN SAJA)
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role != 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
         $request->validate([
             'nama_barang' => 'required',
-            'kode_barang' => 'required|unique:barang',
+            'kode_barang' => 'required|unique:barang,kode_barang',
             'kategori' => 'required|in:alat,bahan',
             'satuan' => 'required|in:pcs,gram,ml',
             'stok' => 'required|integer|min:0',
@@ -45,7 +53,7 @@ class BarangController extends Controller
     }
 
     /**
-     * DETAIL BARANG
+     * DETAIL BARANG (SEMUA BOLEH)
      */
     public function show($id)
     {
@@ -54,19 +62,27 @@ class BarangController extends Controller
     }
 
     /**
-     * FORM EDIT BARANG
+     * FORM EDIT BARANG (ADMIN SAJA)
      */
     public function edit($id)
     {
+        if (auth()->user()->role != 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
         $barang = Barang::findOrFail($id);
         return view('barang.edit', compact('barang'));
     }
 
     /**
-     * UPDATE BARANG
+     * UPDATE BARANG (ADMIN SAJA)
      */
     public function update(Request $request, $id)
     {
+        if (auth()->user()->role != 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
         $barang = Barang::findOrFail($id);
 
         $request->validate([
@@ -81,13 +97,18 @@ class BarangController extends Controller
 
         $barang->update($request->all());
 
-     return redirect('/barang')->with('success', 'Barang berhasil diupdate');
+        return redirect('/barang')->with('success', 'Barang berhasil diupdate');
     }
+
     /**
-     * HAPUS BARANG
+     * HAPUS BARANG (ADMIN SAJA)
      */
     public function destroy($id)
     {
+        if (auth()->user()->role != 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
         Barang::findOrFail($id)->delete();
 
         return redirect('/barang')->with('success', 'Barang berhasil dihapus');

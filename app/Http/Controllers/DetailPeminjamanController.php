@@ -4,114 +4,83 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailPeminjaman;
 use App\Models\Peminjaman;
-use App\Models\Barang;
 use Illuminate\Http\Request;
 
 class DetailPeminjamanController extends Controller
 {
-    /**
-     * TAMPILKAN SEMUA DETAIL PEMINJAMAN
-     */
+    // public function __construct()
+    // {
+    //     // Pastikan user sudah login
+    //     $this->middleware('auth');
+    // }
+
     public function index()
     {
+        // Menampilkan semua detail peminjaman
+        // Admin dan User dapat mengakses data ini
         $detail = DetailPeminjaman::with('peminjaman', 'barang')->get();
         return view('detail_peminjaman.index', compact('detail'));
     }
 
-    /**
-     * FORM TAMBAH DETAIL
-     */
     public function create()
     {
-        $peminjaman = Peminjaman::all();
-        $barang = Barang::all();
+        // Hanya admin yang bisa mengakses halaman tambah detail
+        if (auth()->user()->role != 'admin') {
+            return redirect('/detail-peminjaman')->with('error', 'Akses ditolak');
+        }
 
-        return view('detail_peminjaman.create', compact('peminjaman', 'barang'));
+        $peminjaman = Peminjaman::all();
+        return view('detail_peminjaman.create', compact('peminjaman'));
     }
 
-    /**
-     * SIMPAN DETAIL PEMINJAMAN + KURANGI STOK
-     */
     public function store(Request $request)
     {
+        // Validasi input untuk menyimpan data peminjaman
         $request->validate([
             'peminjaman_id' => 'required|exists:peminjaman,id',
             'barang_id' => 'required|exists:barang,id',
             'jumlah' => 'required|integer|min:1',
         ]);
 
-        $barang = Barang::findOrFail($request->barang_id);
-
-        // CEK STOK
-        if ($barang->stok < $request->jumlah) {
-            return back()->with('error', 'Stok tidak mencukupi');
-        }
-
-        // KURANGI STOK
-        $barang->stok -= $request->jumlah;
-        $barang->save();
-
-        // SIMPAN DETAIL
-        DetailPeminjaman::create([
-            'peminjaman_id' => $request->peminjaman_id,
-            'barang_id' => $request->barang_id,
-            'jumlah' => $request->jumlah,
-        ]);
+        DetailPeminjaman::create($request->all());
 
         return redirect('/detail-peminjaman')->with('success', 'Detail berhasil ditambahkan');
     }
 
-    /**
-     * LIHAT DETAIL BERDASARKAN PEMINJAMAN
-     */
     public function byPeminjaman($id)
     {
+        // Admin dan user bisa melihat detail peminjaman berdasarkan id
         $peminjaman = Peminjaman::findOrFail($id);
-
-        $detail = DetailPeminjaman::with('barang')
-            ->where('peminjaman_id', $id)
-            ->get();
+        $detail = DetailPeminjaman::where('peminjaman_id', $id)->get();
 
         return view('detail_peminjaman.show', compact('peminjaman', 'detail'));
     }
 
-    /**
-     * FORM EDIT DETAIL
-     */
     public function edit($id)
     {
-        $detail = DetailPeminjaman::findOrFail($id);
-        $barang = Barang::all();
+        // Hanya admin yang bisa mengedit
+        if (auth()->user()->role != 'admin') {
+            return redirect('/detail-peminjaman')->with('error', 'Akses ditolak');
+        }
 
-        return view('detail_peminjaman.edit', compact('detail', 'barang'));
+        $detail = DetailPeminjaman::findOrFail($id);
+        return view('detail_peminjaman.edit', compact('detail'));
     }
 
-    /**
-     * UPDATE DETAIL + SESUAIKAN STOK
-     */
     public function update(Request $request, $id)
     {
+        // Hanya admin yang bisa mengupdate detail peminjaman
+        if (auth()->user()->role != 'admin') {
+            return redirect('/detail-peminjaman')->with('error', 'Akses ditolak');
+        }
+
         $detail = DetailPeminjaman::findOrFail($id);
 
+        // Validasi input jumlah barang
         $request->validate([
             'jumlah' => 'required|integer|min:1',
         ]);
 
-        $barang = Barang::findOrFail($detail->barang_id);
-
-        // BALIKKAN STOK LAMA
-        $barang->stok += $detail->jumlah;
-
-        // CEK STOK BARU
-        if ($barang->stok < $request->jumlah) {
-            return back()->with('error', 'Stok tidak mencukupi');
-        }
-
-        // KURANGI STOK BARU
-        $barang->stok -= $request->jumlah;
-        $barang->save();
-
-        // UPDATE DETAIL
         $detail->update([
             'jumlah' => $request->jumlah
         ]);
@@ -119,20 +88,14 @@ class DetailPeminjamanController extends Controller
         return redirect('/detail-peminjaman')->with('success', 'Detail berhasil diupdate');
     }
 
-    /**
-     * HAPUS DETAIL + KEMBALIKAN STOK
-     */
     public function destroy($id)
     {
-        $detail = DetailPeminjaman::findOrFail($id);
+        // Hanya admin yang bisa menghapus detail peminjaman
+        if (auth()->user()->role != 'admin') {
+            return redirect('/detail-peminjaman')->with('error', 'Akses ditolak');
+        }
 
-        // KEMBALIKAN STOK
-        $barang = Barang::findOrFail($detail->barang_id);
-        $barang->stok += $detail->jumlah;
-        $barang->save();
-
-        $detail->delete();
-
-        return redirect()->back()->with('success', 'Detail berhasil dihapus');
+        DetailPeminjaman::findOrFail($id)->delete();
+        return back()->with('success', 'Detail berhasil dihapus');
     }
 }
