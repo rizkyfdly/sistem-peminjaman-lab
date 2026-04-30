@@ -1,19 +1,27 @@
-<h1>Edit SOP</h1>
+<h2>Edit SOP</h2>
 
-<form method="POST" action="{{ route('sop.update', $sop->id) }}">
-@csrf
-@method('PUT')
+<form action="{{ route('sop.update', $sop->id) }}" method="POST">
+    @csrf
+    @method('PUT')
 
-<select name="barang_id">
-    @foreach($barang as $b)
-        <option value="{{ $b->id }}" {{ $sop->barang_id == $b->id ? 'selected' : '' }}>
-            {{ $b->nama }}
-        </option>
-    @endforeach
-</select>
+    <!-- Pilih Barang -->
+    <label>Barang</label>
+    <select name="barang_id">
+        @foreach($barang as $b)
+            <option value="{{ $b->id }}" 
+                {{ $sop->barang_id == $b->id ? 'selected' : '' }}>
+                {{ $b->nama_barang }}
+            </option>
+        @endforeach
+    </select>
 
-<input type="text" name="judul" value="{{ $sop->judul }}">
-<textarea name="deskripsi">{{ $sop->deskripsi }}</textarea>
+    <br><br>
 
-<button type="submit">Update</button>
+    <!-- Isi SOP -->
+    <label>Isi SOP</label>
+    <textarea name="isi_sop">{{ $sop->isi_sop }}</textarea>
+
+    <br><br>
+
+    <button type="submit">Update</button>
 </form>

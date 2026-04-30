@@ -14,7 +14,7 @@ class SopBarangController extends Controller
     public function index()
     {
         // USER & ADMIN boleh lihat data
-        $sop = Sop::with('barang')->get();
+        $sop = SopBarang::with('barang')->get();
 
         return view('sop.index', compact('sop'));
     }

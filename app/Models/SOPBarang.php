@@ -19,6 +19,6 @@ class SopBarang extends Model
     // relasi ke barang
     public function barang()
     {
-        return $this->belongsTo(Barang::class);
+        return $this->belongsTo(Barang::class, 'barang_id');
     }
 }

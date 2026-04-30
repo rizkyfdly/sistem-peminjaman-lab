@@ -19,9 +19,13 @@
     <thead>
         <tr>
             <th>No</th>
-            <th>Nama SOP</th>
-            <th>Barang</th>
-            <th>Aksi</th>
+            <th>Nama Barang</th>
+            <th>SOP Barang</th>
+
+            {{-- Kolom Aksi hanya untuk admin --}}
+            @if(auth()->check() && auth()->user()->role == 'admin')
+                <th>Aksi</th>
+            @endif
         </tr>
     </thead>
 
@@ -30,15 +34,15 @@
             <tr>
                 <td>{{ $key + 1 }}</td>
 
-                <td>{{ $item->isi_sop }}</td>
-
                 <td>
                     {{ $item->barang ? $item->barang->nama_barang : 'Barang tidak ditemukan' }}
                 </td>
 
-                <td>
-                    {{-- Edit & Hapus hanya admin --}}
-                    @if(auth()->check() && auth()->user()->role == 'admin')
+                <td>{{ $item->isi_sop }}</td>
+
+                {{-- Aksi hanya untuk admin --}}
+                @if(auth()->check() && auth()->user()->role == 'admin')
+                    <td>
                         <a href="{{ route('sop.edit', $item->id) }}">Edit</a>
 
                         <form action="{{ route('sop.destroy', $item->id) }}" method="POST" style="display:inline;">
@@ -46,10 +50,8 @@
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
                         </form>
-                    @else
-                        <span>-</span>
-                    @endif
-                </td>
+                    </td>
+                @endif
             </tr>
         @endforeach
     </tbody>

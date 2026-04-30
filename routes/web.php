@@ -35,8 +35,9 @@ Route::middleware(['auth'])->group(function () {
     ]);
      // Barang (user hanya lihat)
     Route::resource('sop', SopBarangController::class)->only([
-        'index', 'show'
+        'index'
     ]);
+    
 
     // Peminjaman
     Route::get('/peminjaman', [PeminjamanController::class, 'index']);
@@ -50,16 +51,23 @@ Route::middleware(['auth'])->group(function () {
 | KHUSUS ADMIN
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin') ->group(function () {
 
     // User
     Route::resource('users', UserController::class);
+    
 
     // Barang (full akses)
     Route::resource('barang', BarangController::class)->except([
         'index', 'show'
     ]);
 
+         // SOP (admin full akses kecuali show)
+    Route::resource('sop', SopBarangController::class)->except(['show']);
+
+    // Lihat SOP berdasarkan barang
+    Route::get('/sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang']);
+    
     // Aksi peminjaman
     Route::post('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve']);
     Route::post('/peminjaman/{id}/pinjam', [PeminjamanController::class, 'pinjam']);
@@ -69,9 +77,5 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('detail-peminjaman', DetailPeminjamanController::class);
     Route::get('/detail-peminjaman/peminjaman/{id}', [DetailPeminjamanController::class, 'byPeminjaman']);
 
-    // SOP
-    Route::resource('sop', SopBarangController::class)->except(['show']);
-    Route::get('/sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang']);
 
-    Route::get('/sop', [SopBarangController::class, 'index'])->name('sop.index');
 });
