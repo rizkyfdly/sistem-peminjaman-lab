@@ -9,7 +9,7 @@
 
 {{-- HANYA ADMIN --}}
 @if(auth()->user()->role == 'admin')
-    <a href="/barang/create">+ Tambah Barang</a>
+    <a href="/admin/barang/create">+ Tambah Barang</a>
 @endif
 
 <br><br>
