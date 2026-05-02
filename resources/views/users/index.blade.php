@@ -1,8 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data User</title>
+</head>
+<body>
+
 <h1>Data User</h1>
 
-<a href="/users/create">Tambah User</a>
+{{-- TAMBAH USER --}}
+<a href="{{ route('admin.users.create') }}">+ Tambah User</a>
 
-<table border="1">
+<br><br>
+
+<table border="1" cellpadding="10">
     <tr>
         <th>Nama</th>
         <th>Email</th>
@@ -18,14 +28,21 @@
         <td>{{ $u->nim_nip }}</td>
         <td>{{ $u->role }}</td>
         <td>
-            <a href="/users/{{ $u->id }}/edit">Edit</a>
 
-            <form action="/users/{{ $u->id }}" method="POST" style="display:inline;">
+            {{-- EDIT --}}
+            <a href="{{ route('admin.users.edit', $u->id) }}">Edit</a>
+
+            {{-- DELETE --}}
+            <form action="{{ route('admin.users.destroy', $u->id) }}" method="POST" style="display:inline;">
                 @csrf
                 @method('DELETE')
-                <button>Hapus</button>
+                <button onclick="return confirm('Hapus user ini?')">Hapus</button>
             </form>
+
         </td>
     </tr>
     @endforeach
 </table>
+
+</body>
+</html>

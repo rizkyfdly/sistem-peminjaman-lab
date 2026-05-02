@@ -16,11 +16,11 @@ use App\Http\Controllers\AuthController;
 */
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
-| SEMUA USER (LOGIN)
+| USER (LOGIN)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -29,53 +29,64 @@ Route::middleware(['auth'])->group(function () {
         return view('welcome');
     });
 
-    // Barang (user hanya lihat)
+    // Barang (USER hanya lihat)
     Route::resource('barang', BarangController::class)->only([
         'index', 'show'
     ]);
-     // Barang (user hanya lihat)
+
+    // SOP (USER)
     Route::resource('sop', SopBarangController::class)->only([
         'index'
     ]);
-    
 
-    // Peminjaman
-    Route::get('/peminjaman', [PeminjamanController::class, 'index']);
-    Route::get('/peminjaman/create', [PeminjamanController::class, 'create']);
-    Route::post('/peminjaman', [PeminjamanController::class, 'store']);
-    Route::get('/peminjaman/{id}', [PeminjamanController::class, 'show']);
+    // Peminjaman USER
+    Route::prefix('peminjaman')->group(function () {
+        Route::get('/', [PeminjamanController::class, 'index']);
+        Route::get('/create', [PeminjamanController::class, 'create']);
+        Route::post('/', [PeminjamanController::class, 'store']);
+        Route::get('/{id}', [PeminjamanController::class, 'show']);
+    });
 });
 
 /*
 |--------------------------------------------------------------------------
-| KHUSUS ADMIN
+| ADMIN
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->prefix('admin') ->group(function () {
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-    // User
-    Route::resource('users', UserController::class);
-    
+    /*
+    |---------------------------------
+    | FIX PENTING: INDEX ADMIN BARANG
+    |---------------------------------
+    */
+    Route::get('barang', [BarangController::class, 'index'])
+        ->name('barang.index');
 
-    // Barang (full akses)
-    Route::resource('barang', BarangController::class)->except([
-        'index', 'show'
-    ]);
+    // CRUD barang admin
+    Route::resource('barang', BarangController::class)
+        ->except(['index', 'show']);
 
-         // SOP (admin full akses kecuali show)
-    Route::resource('sop', SopBarangController::class)->except(['show']);
+    // SOP admin
+    Route::resource('sop', SopBarangController::class)
+        ->except(['show']);
 
-    // Lihat SOP berdasarkan barang
-    Route::get('/sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang']);
-    
-    // Aksi peminjaman
-    Route::post('/peminjaman/{id}/approve', [PeminjamanController::class, 'approve']);
-    Route::post('/peminjaman/{id}/pinjam', [PeminjamanController::class, 'pinjam']);
-    Route::post('/peminjaman/{id}/kembali', [PeminjamanController::class, 'pengembalian']);
+    Route::get('sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang'])
+        ->name('sop.byBarang');
+
+    // Peminjaman admin
+    Route::post('peminjaman/{id}/approve', [PeminjamanController::class, 'approve']);
+    Route::post('peminjaman/{id}/pinjam', [PeminjamanController::class, 'pinjam']);
+    Route::post('peminjaman/{id}/kembali', [PeminjamanController::class, 'pengembalian']);
 
     // Detail peminjaman
     Route::resource('detail-peminjaman', DetailPeminjamanController::class);
-    Route::get('/detail-peminjaman/peminjaman/{id}', [DetailPeminjamanController::class, 'byPeminjaman']);
 
+    Route::get('detail-peminjaman/peminjaman/{id}', [DetailPeminjamanController::class, 'byPeminjaman']);
 
+    // User management
+    Route::resource('users', UserController::class);
 });

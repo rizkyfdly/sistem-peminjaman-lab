@@ -7,9 +7,9 @@
 
 <h2>📦 Data Barang</h2>
 
-{{-- HANYA ADMIN --}}
+{{-- USER & ADMIN BISA LIHAT --}}
 @if(auth()->user()->role == 'admin')
-    <a href="/admin/barang/create">+ Tambah Barang</a>
+    <a href="{{ url('/admin/barang/create') }}">+ Tambah Barang</a>
 @endif
 
 <br><br>
@@ -26,7 +26,6 @@
             <th>Kondisi</th>
             <th>Lokasi</th>
 
-            {{-- HANYA ADMIN --}}
             @if(auth()->user()->role == 'admin')
                 <th>Aksi</th>
             @endif
@@ -45,23 +44,20 @@
             <td>{{ $b->kondisi }}</td>
             <td>{{ $b->lokasi }}</td>
 
-            {{-- HANYA ADMIN --}}
             @if(auth()->user()->role == 'admin')
             <td>
-                <a href="/barang/{{ $b->id }}/edit">Edit</a>
+                <a href="{{ url('/admin/barang/'.$b->id.'/edit') }}">Edit</a>
 
-                <form action="/barang/{{ $b->id }}" method="POST" style="display:inline;">
+                <form action="{{ url('/admin/barang/'.$b->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button onclick="return confirm('Hapus data?')">Hapus</button>
                 </form>
             </td>
             @endif
-
         </tr>
         @endforeach
     </tbody>
-
 </table>
 
 </body>

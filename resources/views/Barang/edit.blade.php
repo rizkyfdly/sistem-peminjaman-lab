@@ -4,16 +4,16 @@
     <title>Edit Barang</title>
 </head>
 <body>
-    
+
 @if(auth()->user()->role != 'admin')
     <h3>Akses ditolak</h3>
-    <a href="/barang">Kembali</a>
+    <a href="{{ url('/barang') }}">Kembali</a>
     @php exit; @endphp
-@endif    
+@endif
 
 <h2>✏️ Edit Barang</h2>
 
-<form action="/barang/{{ $barang->id }}" method="POST">
+<form action="{{ url('/admin/barang/'.$barang->id) }}" method="POST">
     @csrf
     @method('PUT')
 
@@ -49,7 +49,7 @@
 </form>
 
 <br>
-<a href="/barang">Kembali</a>
+<a href="{{ url('/admin/barang') }}">Kembali</a>
 
 </body>
 </html>

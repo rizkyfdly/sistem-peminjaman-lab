@@ -30,7 +30,7 @@ class UserController extends Controller
             'role' => $request->role ?? 'user',
         ]);
 
-        return redirect('/users');
+        return redirect()->route('admin.users.index');
     }
 
     public function edit($id)
@@ -52,12 +52,13 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect('/users');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User berhasil diperbarui');
     }
 
     public function destroy($id)
     {
         User::findOrFail($id)->delete();
-        return redirect('/users');
+        return redirect()->route('admin.users.index');
     }
 }

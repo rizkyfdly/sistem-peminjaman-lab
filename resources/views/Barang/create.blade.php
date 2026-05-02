@@ -7,7 +7,7 @@
 
 <h2>➕ Tambah Barang</h2>
 
-<form action="/barang" method="POST">
+<form action="{{ url('/admin/barang') }}" method="POST">
     @csrf
 
     <label>Nama Barang</label><br>
@@ -42,7 +42,7 @@
 </form>
 
 <br>
-<a href="/barang">Kembali</a>
+<a href="{{ url('/admin/barang') }}">Kembali</a>
 
 </body>
 </html>
