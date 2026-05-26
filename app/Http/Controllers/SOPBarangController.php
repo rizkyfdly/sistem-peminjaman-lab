@@ -8,96 +8,113 @@ use Illuminate\Http\Request;
 
 class SopBarangController extends Controller
 {
-    /**
-     * TAMPILKAN SEMUA SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | TAMPILKAN SEMUA SOP
+    |--------------------------------------------------------------------------
+    */
     public function index()
     {
-        // USER & ADMIN boleh lihat data
         $sop = SopBarang::with('barang')->get();
 
         return view('sop.index', compact('sop'));
     }
 
-    /**
-     * FORM TAMBAH SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | FORM TAMBAH SOP
+    |--------------------------------------------------------------------------
+    */
     public function create()
     {
-        // Ambil semua data barang untuk form tambah SOP
         $barang = Barang::all();
+
         return view('sop.create', compact('barang'));
     }
 
-    /**
-     * SIMPAN SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN SOP
+    |--------------------------------------------------------------------------
+    */
     public function store(Request $request)
     {
-        // Validasi input untuk menyimpan SOP
         $request->validate([
-            'barang_id' => 'required|exists:barang,id', // Pastikan barang_id ada di tabel barang
-            'isi_sop' => 'required',
+            'barang_id' => 'required|exists:barang,id',
+            'isi_sop'   => 'required',
         ]);
 
-        // Menyimpan SOP baru
         SopBarang::create([
             'barang_id' => $request->barang_id,
-            'isi_sop' => $request->isi_sop,
+            'isi_sop'   => $request->isi_sop,
         ]);
 
-        return redirect('/sop')->with('success', 'SOP berhasil ditambahkan');
+        return redirect()
+            ->route('admin.sop.index')
+            ->with('success', 'SOP berhasil ditambahkan');
     }
 
-    /**
-     * LIHAT SOP PER BARANG
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | SOP BERDASARKAN BARANG
+    |--------------------------------------------------------------------------
+    */
     public function showByBarang($barang_id)
     {
         $barang = Barang::findOrFail($barang_id);
-        $sop = SopBarang::where('barang_id', $barang_id)->get();  // Ambil SOP berdasarkan barang_id
+
+        $sop = SopBarang::where('barang_id', $barang_id)->get();
 
         return view('sop.show', compact('barang', 'sop'));
     }
 
-    /**
-     * FORM EDIT SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | FORM EDIT SOP
+    |--------------------------------------------------------------------------
+    */
     public function edit($id)
     {
-        $sop = SopBarang::findOrFail($id); // Ambil SOP berdasarkan ID
-        $barang = Barang::all(); // Ambil semua data barang untuk dropdown
+        $sop = SopBarang::findOrFail($id);
+
+        $barang = Barang::all();
 
         return view('sop.edit', compact('sop', 'barang'));
     }
 
-    /**
-     * UPDATE SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE SOP
+    |--------------------------------------------------------------------------
+    */
     public function update(Request $request, $id)
     {
         $sop = SopBarang::findOrFail($id);
 
-        // Validasi input untuk update SOP
         $request->validate([
             'isi_sop' => 'required',
         ]);
 
-        // Update SOP
         $sop->update([
             'isi_sop' => $request->isi_sop
         ]);
 
-        return redirect('/sop')->with('success', 'SOP berhasil diupdate');
+        return redirect()
+            ->route('admin.sop.index')
+            ->with('success', 'SOP berhasil diupdate');
     }
 
-    /**
-     * HAPUS SOP
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | HAPUS SOP
+    |--------------------------------------------------------------------------
+    */
     public function destroy($id)
     {
-        SopBarang::findOrFail($id)->delete(); // Hapus data SOP
+        SopBarang::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'SOP berhasil dihapus');
+        return redirect()
+            ->route('admin.sop.index')
+            ->with('success', 'SOP berhasil dihapus');
     }
 }

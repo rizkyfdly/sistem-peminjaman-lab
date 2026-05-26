@@ -18,7 +18,10 @@ class DetailPeminjamanController extends Controller
     {
         // Menampilkan semua detail peminjaman
         // Admin dan User dapat mengakses data ini
-        $detail = DetailPeminjaman::with('peminjaman', 'barang')->get();
+    $detail = DetailPeminjaman::with(
+        'peminjaman.user',
+        'barang'
+    )->get();
         return view('detail_peminjaman.index', compact('detail'));
     }
 
@@ -42,7 +45,11 @@ class DetailPeminjamanController extends Controller
             'jumlah' => 'required|integer|min:1',
         ]);
 
-        DetailPeminjaman::create($request->all());
+        DetailPeminjaman::create([
+            'peminjaman_id' => $request->peminjaman_id,
+            'barang_id' => $request->barang_id,
+            'jumlah' => $request->jumlah,
+        ]);
 
         return redirect('/detail-peminjaman')->with('success', 'Detail berhasil ditambahkan');
     }

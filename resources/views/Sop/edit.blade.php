@@ -1,6 +1,6 @@
 <h2>Edit SOP</h2>
 
-<form action="{{ route('sop.update', $sop->id) }}" method="POST">
+<form action="{{ route('admin.sop.update', $sop->id) }}" method="POST">
     @csrf
     @method('PUT')
 

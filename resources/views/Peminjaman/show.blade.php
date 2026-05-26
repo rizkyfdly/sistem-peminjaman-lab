@@ -1,42 +1,105 @@
-<h1>Detail Peminjaman</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detail Peminjaman</title>
+</head>
+<body>
 
-@if(session('success'))
-    <p style="color:green">{{ session('success') }}</p>
-@endif
-
-@if(session('error'))
-    <p style="color:red">{{ session('error') }}</p>
-@endif
-
-<p><b>Kode:</b> {{ $peminjaman->kode_transaksi }}</p>
-<p><b>User:</b> {{ $peminjaman->user->nama }}</p>
-<p><b>Status:</b> {{ $peminjaman->status }}</p>
-
-<h3>Barang:</h3>
-<ul>
-    @foreach($peminjaman->detail as $d)
-        <li>{{ $d->barang->nama_barang }} - {{ $d->jumlah }}</li>
-    @endforeach
-</ul>
+<h1>📋 Detail Peminjaman</h1>
 
 <br>
 
-<form action="/peminjaman/{{ $peminjaman->id }}/approve" method="POST">
-    @csrf
-    <button type="submit">Approve</button>
-</form>
+<p>
+    <strong>Kode Transaksi:</strong>
+    {{ $peminjaman->kode_transaksi }}
+</p>
 
-<form action="/peminjaman/{{ $peminjaman->id }}/pinjam" method="POST">
-    @csrf
-    <button type="submit">Pinjam</button>
-</form>
+<p>
+    <strong>User:</strong>
+    {{ $peminjaman->user->name }}
+</p>
 
-<form action="/peminjaman/{{ $peminjaman->id }}/kembali" method="POST">
-    @csrf
-    <input type="text" name="kondisi" placeholder="kondisi (baik/rusak ringan/dll)">
-    <button type="submit">Kembalikan</button>
-</form>
+<p>
+    <strong>Status:</strong>
+
+    @if($peminjaman->status == 'diajukan')
+
+        <span style="color:orange">
+            Diajukan
+        </span>
+
+    @elseif($peminjaman->status == 'dipinjam')
+
+        <span style="color:blue">
+            Dipinjam
+        </span>
+
+    @elseif($peminjaman->status == 'menunggu_verifikasi')
+
+        <span style="color:purple">
+            Menunggu Verifikasi
+        </span>
+
+    @elseif($peminjaman->status == 'dikembalikan')
+
+        <span style="color:green">
+            Dikembalikan
+        </span>
+
+    @endif
+
+</p>
+
+<p>
+    <strong>Tanggal Pinjam:</strong>
+    {{ $peminjaman->tanggal_pinjam }}
+</p>
+
+<hr>
+
+<h3>📦 Daftar Barang</h3>
+
+<table border="1" cellpadding="10">
+
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Nama Barang</th>
+            <th>Jumlah</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach($peminjaman->detail as $key => $d)
+
+        <tr>
+
+            <td>
+                {{ $key + 1 }}
+            </td>
+
+            <td>
+                {{ $d->barang->nama_barang }}
+            </td>
+
+            <td>
+                {{ $d->jumlah }}
+            </td>
+
+        </tr>
+
+        @endforeach
+
+    </tbody>
+
+</table>
 
 <br>
 
-<a href="/peminjaman">Kembali</a>
+<a href="/peminjaman">
+    ← Kembali
+</a>
+
+</body>
+</html>

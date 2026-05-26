@@ -10,7 +10,7 @@
 
 {{-- HANYA ADMIN --}}
 @if(auth()->check() && auth()->user()->role == 'admin')
-    <a href="{{ route('sop.create') }}">+ Tambah SOP Barang</a>
+    <a href="{{ route('admin.sop.create') }}">+ Tambah SOP Barang</a>
 @endif
 
 <br><br>
@@ -43,9 +43,9 @@
                 {{-- Aksi hanya untuk admin --}}
                 @if(auth()->check() && auth()->user()->role == 'admin')
                     <td>
-                        <a href="{{ route('sop.edit', $item->id) }}">Edit</a>
+                        <a href="{{ route('admin.sop.edit', $item->id) }}">Edit</a>
 
-                        <form action="{{ route('sop.destroy', $item->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('admin.sop.destroy', $item->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>

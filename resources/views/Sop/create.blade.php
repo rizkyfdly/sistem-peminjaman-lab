@@ -7,7 +7,7 @@
 
 <h2>➕ Tambah SOP Barang</h2>
 
-<form action="{{ route('sop.store') }}" method="POST">
+<form action="{{ route('admin.sop.store') }}" method="POST">
     @csrf
 
     <label>Barang:</label>
