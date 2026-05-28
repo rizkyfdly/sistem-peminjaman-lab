@@ -38,8 +38,18 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', function () {
-        return view('welcome');
+
+        if(auth()->user()->role == 'admin'){
+
+            return view('admin.dashboard');
+
+        }
+
+        return view('user.home');
+
     })->name('dashboard');
+
+});
 
     /*
     |--------------------------------------------------------------------------
@@ -69,11 +79,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [PeminjamanController::class, 'store'])->name('store');
 
         Route::get('/{id}', [PeminjamanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [PeminjamanController::class, 'edit'])->name('edit');
 
         Route::post('/{id}/ajukan-pengembalian', [PeminjamanController::class, 'ajukanPengembalian'])
             ->name('ajukanPengembalian');
     });
-});
 
 /*
 |--------------------------------------------------------------------------

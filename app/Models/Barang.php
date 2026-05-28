@@ -19,6 +19,7 @@ class Barang extends Model
         'stok',
         'kondisi',
         'lokasi',
+        'gambar',
     ];
 
     // relasi ke detail peminjaman

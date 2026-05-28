@@ -45,9 +45,18 @@ class BarangController extends Controller
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required',
             'lokasi' => 'required',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Barang::create($request->all());
+        $gambar=null;
+
+        if($request->hasFile('gambar')){
+
+            $gambar = $request->file('gambar')
+                            ->store('barang', 'public');
+        }
+
+        Barang::create($request->all())->update(['gambar' => $gambar]);
 
         return redirect('/barang')->with('success', 'Barang berhasil ditambahkan');
     }
@@ -93,9 +102,19 @@ class BarangController extends Controller
             'stok' => 'required|integer|min:0',
             'kondisi' => 'required',
             'lokasi' => 'required',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $gambar = $barang->gambar;
+
+        if($request->hasFile('gambar')){
+
+            $gambar = $request->file('gambar')
+                            ->store('barang', 'public');
+        }
+
         $barang->update($request->all());
+        $barang->update(['gambar' => $gambar]);
 
         return redirect('/barang')->with('success', 'Barang berhasil diupdate');
     }

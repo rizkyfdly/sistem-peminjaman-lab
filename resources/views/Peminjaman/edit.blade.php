@@ -1,46 +1,274 @@
-<h1>Edit Peminjaman</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-@if(session('success'))
-    <p style="color:green">{{ session('success') }}</p>
-@endif
+    <meta charset="UTF-8">
 
-<form action="/peminjaman/{{ $peminjaman->id }}" method="POST">
-    @csrf
-    @method('PUT')
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <label>User:</label>
-    <select name="user_id">
-        @foreach($users as $u)
-            <option value="{{ $u->id }}"
-                {{ $peminjaman->user_id == $u->id ? 'selected' : '' }}>
-                {{ $u->nama }}
-            </option>
-        @endforeach
-    </select>
+    <title>Edit Peminjaman</title>
 
-    <br><br>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-    <label>Status:</label>
-    <select name="status">
-        <option value="diajukan" {{ $peminjaman->status == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-        <option value="disetujui" {{ $peminjaman->status == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-        <option value="ditolak" {{ $peminjaman->status == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-        <option value="dipinjam" {{ $peminjaman->status == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-        <option value="dikembalikan" {{ $peminjaman->status == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
-    </select>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <br><br>
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
 
-    <h3>Detail Barang</h3>
-    <ul>
-        @foreach($peminjaman->detail as $d)
-            <li>{{ $d->barang->nama_barang }} - {{ $d->jumlah }}</li>
-        @endforeach
-    </ul>
+    <style>
 
-    <br>
+        *{
+            font-family: 'Poppins', sans-serif;
+        }
 
-    <button type="submit">Update</button>
-</form>
+        body{
+            background: #F5F9FF;
+        }
 
-<a href="/peminjaman">Kembali</a>
+        .page-title{
+
+            color: #0B1F66;
+
+            font-weight: 800;
+        }
+
+        .form-card{
+
+            background: white;
+
+            border-radius: 28px;
+
+            padding: 40px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .form-control,
+        .form-select{
+
+            height: 55px;
+
+            border-radius: 14px;
+
+            border: 1px solid #E5EAF5;
+        }
+
+        .form-control:focus,
+        .form-select:focus{
+
+            box-shadow: none;
+
+            border-color: #1565FF;
+        }
+
+        .btn-main{
+
+            background: #1565FF;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 14px;
+
+            padding: 12px 24px;
+
+            transition: 0.3s;
+        }
+
+        .btn-main:hover{
+
+            background: #0B1F66;
+        }
+
+        .back-btn{
+
+            text-decoration: none;
+
+            color: #0B1F66;
+
+            font-weight: 600;
+        }
+
+        .info-card{
+
+            background: #F8FAFF;
+
+            border-radius: 20px;
+
+            padding: 20px;
+        }
+
+        .barang-item{
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 14px 18px;
+
+            margin-bottom: 12px;
+
+            border: 1px solid #EEF2FA;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+
+        <a href="/peminjaman"
+           class="back-btn">
+
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Data Peminjaman
+
+        </a>
+
+        <h1 class="page-title mt-3">
+
+            ✏️ Edit Peminjaman
+
+        </h1>
+
+    </div>
+
+    <!-- SUCCESS -->
+    @if(session('success'))
+
+        <div class="alert alert-success rounded-4">
+
+            {{ session('success') }}
+
+        </div>
+
+    @endif
+
+    <!-- FORM -->
+    <div class="form-card">
+
+        <form action="/peminjaman/{{ $peminjaman->id }}"
+              method="POST">
+
+            @csrf
+            @method('PUT')
+
+            <div class="row g-4">
+
+                <!-- USER -->
+                <div class="col-md-12">
+
+                    <div class="info-card">
+
+                        <strong>
+
+                            <i class="bi bi-person-circle"></i>
+                            User:
+
+                        </strong>
+
+                        {{ auth()->user()->name }}
+
+                    </div>
+
+                </div>
+
+                <!-- DETAIL BARANG -->
+                <div class="col-md-12">
+
+                    <div class="info-card">
+
+                        <h5 class="fw-bold mb-4">
+
+                            📦 Detail Barang
+
+                        </h5>
+
+                        @foreach($peminjaman->detail as $key => $d)
+
+                            <div class="barang-item">
+
+                                <div class="row align-items-center g-3">
+
+                                    <div class="col-md-8">
+
+                                        <label class="mb-2 fw-semibold">
+
+                                            Barang
+
+                                        </label>
+
+                                        <select name="barang[{{ $key }}][id]"
+                                                class="form-select">
+
+                                            @foreach($barang as $b)
+
+                                                <option value="{{ $b->id }}"
+                                                    {{ $d->barang_id == $b->id ? 'selected' : '' }}>
+
+                                                    {{ $b->nama_barang }}
+                                                    (stok: {{ $b->stok }})
+
+                                                </option>
+
+                                            @endforeach
+
+                                        </select>
+
+                                    </div>
+
+                                    <div class="col-md-4">
+
+                                        <label class="mb-2 fw-semibold">
+
+                                            Jumlah
+
+                                        </label>
+
+                                        <input type="number"
+                                            name="barang[{{ $key }}][jumlah]"
+                                            value="{{ $d->jumlah }}"
+                                            class="form-control">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- BUTTON -->
+            <button type="submit"
+                    class="btn-main mt-4">
+
+                Update Peminjaman
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

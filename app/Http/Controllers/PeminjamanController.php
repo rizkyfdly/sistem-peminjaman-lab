@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Peminjaman;
 use App\Models\DetailPeminjaman;
 use App\Models\Barang;
@@ -359,5 +360,18 @@ class PeminjamanController extends Controller
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
+    }
+
+    public function edit($id)
+    {
+        $peminjaman = Peminjaman::with('detail.barang')
+                        ->findOrFail($id);
+
+        $barang = Barang::all();
+
+        return view('peminjaman.edit', compact(
+            'peminjaman',
+            'barang'
+        ));
     }
 }
