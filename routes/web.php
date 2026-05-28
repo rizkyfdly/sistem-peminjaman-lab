@@ -2,40 +2,59 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\DetailPeminjamanController;
 use App\Http\Controllers\SopBarangController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
 | AUTH
 |--------------------------------------------------------------------------
 */
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth');
+
+Route::get('/register', [AuthController::class, 'showRegister'])
+    ->name('register');
+
 Route::post('/register', [AuthController::class, 'register']);
+
 
 /*
 |--------------------------------------------------------------------------
 | LANDING PAGE
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
+
     return view('landing');
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
-| USER AREA (AUTH)
+| USER AREA
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/dashboard', function () {
 
@@ -49,97 +68,165 @@ Route::middleware(['auth'])->group(function () {
 
     })->name('dashboard');
 
-});
 
     /*
     |--------------------------------------------------------------------------
-    | BARANG (USER)
+    | BARANG (USER VIEW ONLY)
     |--------------------------------------------------------------------------
     */
+
     Route::resource('barang', BarangController::class)
         ->only(['index', 'show']);
+
 
     /*
     |--------------------------------------------------------------------------
     | SOP (USER VIEW ONLY)
     |--------------------------------------------------------------------------
     */
+
     Route::get('/sop', [SopBarangController::class, 'index'])
         ->name('sop.index');
 
+
     /*
     |--------------------------------------------------------------------------
-    | PEMINJAMAN (USER)
+    | PEMINJAMAN USER
     |--------------------------------------------------------------------------
     */
-    Route::prefix('peminjaman')->name('peminjaman.')->group(function () {
 
-        Route::get('/', [PeminjamanController::class, 'index'])->name('index');
-        Route::get('/create', [PeminjamanController::class, 'create'])->name('create');
-        Route::post('/', [PeminjamanController::class, 'store'])->name('store');
+    Route::prefix('peminjaman')
+        ->name('peminjaman.')
+        ->group(function () {
 
-        Route::get('/{id}', [PeminjamanController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [PeminjamanController::class, 'edit'])->name('edit');
+        Route::get('/', [PeminjamanController::class, 'index'])
+            ->name('index');
 
-        Route::post('/{id}/ajukan-pengembalian', [PeminjamanController::class, 'ajukanPengembalian'])
+        Route::get('/create', [PeminjamanController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PeminjamanController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{id}', [PeminjamanController::class, 'show'])
+            ->name('show');
+
+        Route::get('/{id}/edit', [PeminjamanController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{id}', [PeminjamanController::class, 'update'])
+            ->name('update');
+
+        Route::post('/{id}/ajukan-pengembalian',
+            [PeminjamanController::class, 'ajukanPengembalian'])
             ->name('ajukanPengembalian');
+
     });
+
+     Route::get('/profile', [UserController::class, 'profile'])
+        ->name('profile');
+
+    Route::get('/profile/edit', [UserController::class, 'editProfile'])
+        ->name('profile.edit');
+
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])
+        ->name('profile.update');
+
+});
+
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | BARANG (ADMIN CRUD FULL)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('barang', BarangController::class);
+    /*
+    |--------------------------------------------------------------------------
+    | BARANG ADMIN
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | SOP (ADMIN CRUD)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('sop', SopBarangController::class)->except(['show']);
+    Route::resource('barang', BarangController::class);
 
-        Route::get('sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang'])
-            ->name('sop.byBarang');
+      /*
+    |--------------------------------------------------------------------------
+    | SOP ADMIN
+    |--------------------------------------------------------------------------
+    */
+    /*
+    |--------------------------------------------------------------------------
+    | SOP (ADMIN CRUD)
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | PEMINJAMAN (ADMIN)
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('peminjaman', PeminjamanController::class)
-            ->only(['index', 'destroy']);
+    Route::get('/sop', [SopBarangController::class, 'index'])
+        ->name('sop.index');
 
-        Route::post('peminjaman/{id}/approve', [PeminjamanController::class, 'approve'])
-            ->name('peminjaman.approve');
+    Route::get('/sop/create', [SopBarangController::class, 'create'])
+        ->name('sop.create');
 
-        Route::post('peminjaman/{id}/kembali', [PeminjamanController::class, 'pengembalian'])
-            ->name('peminjaman.kembali');
+    Route::post('/sop', [SopBarangController::class, 'store'])
+        ->name('sop.store');
 
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL PEMINJAMAN
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('detail-peminjaman', DetailPeminjamanController::class);
+    Route::get('/sop/{id}', [SopBarangController::class, 'show'])
+        ->name('sop.show');
 
-        Route::get('detail-peminjaman/peminjaman/{id}', [DetailPeminjamanController::class, 'byPeminjaman'])
-            ->name('detail-peminjaman.byPeminjaman');
+    Route::get('/sop/{id}/edit', [SopBarangController::class, 'edit'])
+        ->name('sop.edit');
 
-        /*
-        |--------------------------------------------------------------------------
-        | USER MANAGEMENT
-        |--------------------------------------------------------------------------
-        */
-        Route::resource('users', UserController::class);
-    });
+    Route::put('/sop/{id}', [SopBarangController::class, 'update'])
+        ->name('sop.update');
+
+    Route::delete('/sop/{id}', [SopBarangController::class, 'destroy'])
+        ->name('sop.destroy');
+
+    Route::get('/sop/barang/{barang_id}', [SopBarangController::class, 'showByBarang'])
+        ->name('sop.byBarang');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PEMINJAMAN ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('peminjaman', PeminjamanController::class)
+        ->only(['index', 'destroy']);
+
+    Route::post('peminjaman/{id}/approve',
+        [PeminjamanController::class, 'approve'])
+        ->name('peminjaman.approve');
+
+    Route::post('peminjaman/{id}/kembali',
+        [PeminjamanController::class, 'pengembalian'])
+        ->name('peminjaman.kembali');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL PEMINJAMAN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('detail-peminjaman',
+        DetailPeminjamanController::class);
+
+    Route::get('detail-peminjaman/peminjaman/{id}',
+        [DetailPeminjamanController::class, 'byPeminjaman'])
+        ->name('detail-peminjaman.byPeminjaman');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::resource('users', UserController::class);
+
+});

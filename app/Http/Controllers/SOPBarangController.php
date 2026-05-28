@@ -41,12 +41,28 @@ class SopBarangController extends Controller
     {
         $request->validate([
             'barang_id' => 'required|exists:barang,id',
-            'isi_sop'   => 'required',
+            'judul_sop' => 'required',
+            'langkah'   => 'required',
         ]);
+
+        // GABUNGKAN SEMUA INPUT MENJADI 1 SOP
+        $isi_sop =
+
+        "JUDUL SOP:\n".
+        $request->judul_sop."\n\n".
+
+        "LANGKAH-LANGKAH:\n".
+        $request->langkah."\n\n".
+
+        "CATATAN:\n".
+        ($request->catatan ?? '-')."\n\n".
+
+        "PERINGATAN:\n".
+        ($request->peringatan ?? '-');
 
         SopBarang::create([
             'barang_id' => $request->barang_id,
-            'isi_sop'   => $request->isi_sop,
+            'isi_sop'   => $isi_sop,
         ]);
 
         return redirect()
@@ -77,9 +93,30 @@ class SopBarangController extends Controller
     {
         $sop = SopBarang::findOrFail($id);
 
+        // PECAH ISI SOP
+        $parts = explode("\n\n", $sop->isi_sop);
+
+        $judul = str_replace("JUDUL SOP:\n", "", $parts[0] ?? '');
+
+        $langkah = str_replace("LANGKAH-LANGKAH:\n", "", $parts[1] ?? '');
+
+        $catatan = str_replace("CATATAN:\n", "", $parts[2] ?? '');
+
+        $peringatan = str_replace("PERINGATAN:\n", "", $parts[3] ?? '');
+
         $barang = Barang::all();
 
-        return view('sop.edit', compact('sop', 'barang'));
+        return view(
+            'sop.edit',
+            compact(
+                'sop',
+                'barang',
+                'judul',
+                'langkah',
+                'catatan',
+                'peringatan'
+            )
+        );
     }
 
     /*
@@ -92,11 +129,27 @@ class SopBarangController extends Controller
         $sop = SopBarang::findOrFail($id);
 
         $request->validate([
-            'isi_sop' => 'required',
+            'judul_sop' => 'required',
+            'langkah'   => 'required',
         ]);
 
+        // GABUNGKAN ULANG SOP
+        $isi_sop =
+
+        "JUDUL SOP:\n".
+        $request->judul_sop."\n\n".
+
+        "LANGKAH-LANGKAH:\n".
+        $request->langkah."\n\n".
+
+        "CATATAN:\n".
+        ($request->catatan ?? '-')."\n\n".
+
+        "PERINGATAN:\n".
+        ($request->peringatan ?? '-');
+
         $sop->update([
-            'isi_sop' => $request->isi_sop
+            'isi_sop' => $isi_sop
         ]);
 
         return redirect()
@@ -116,5 +169,19 @@ class SopBarangController extends Controller
         return redirect()
             ->route('admin.sop.index')
             ->with('success', 'SOP berhasil dihapus');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL SOP
+    |--------------------------------------------------------------------------
+    */
+    public function show($id)
+    {
+        $sop = SopBarang::with('barang')->findOrFail($id);
+
+        $barang = $sop->barang;
+
+        return view('sop.show', compact('sop', 'barang'));
     }
 }

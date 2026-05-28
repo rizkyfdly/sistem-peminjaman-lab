@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -60,5 +61,56 @@ class UserController extends Controller
     {
         User::findOrFail($id)->delete();
         return redirect()->route('admin.users.index');
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+
+        return view('profile.index', compact('user'));
+    }
+
+    public function editProfile()
+    {
+        $user = Auth::user();
+
+        return view('profile.edit', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name'  => 'required',
+            'email' => 'required|email',
+            'foto'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = [
+            'name'  => $request->name,
+            'email' => $request->email,
+        ];
+
+        // upload foto
+        if($request->hasFile('foto')){
+
+            $foto = $request->file('foto')
+                            ->store('profile', 'public');
+
+            $data['foto'] = $foto;
+        }
+
+        // password baru
+        if($request->password){
+
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect()
+            ->route('profile')
+            ->with('success', 'Profil berhasil diupdate');
     }
 }

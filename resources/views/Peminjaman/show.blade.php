@@ -387,7 +387,87 @@
         @endforeach
 
     </div>
+    <!-- INFORMASI PENGEMBALIAN -->
+    @if($peminjaman->status == 'dikembalikan')
 
+        <div class="detail-card mt-5">
+
+            <h4 class="fw-bold mb-4">
+
+                📄 Informasi Pengembalian
+
+            </h4>
+
+            <div class="row g-4">
+
+                <!-- KONDISI -->
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <div class="info-title">
+
+                            Kondisi Barang
+
+                        </div>
+
+                        <div class="info-value">
+
+                            {{ $peminjaman->kondisi_kembali }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- DENDA -->
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <div class="info-title">
+
+                            Denda
+
+                        </div>
+
+                        <div class="info-value">
+
+                            Rp {{ number_format($peminjaman->denda, 0, ',', '.') }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- CATATAN -->
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <div class="info-title">
+
+                            Catatan Admin
+
+                        </div>
+
+                        <div class="info-value">
+
+                            {{ $peminjaman->catatan_admin ?? '-' }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    @endif
 </div>
 
 </body>
