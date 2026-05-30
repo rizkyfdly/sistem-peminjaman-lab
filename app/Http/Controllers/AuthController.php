@@ -38,7 +38,15 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // redirect ke dashboard setelah login
-            return redirect('/dashboard');
+            $user = Auth::user();
+
+            if($user->role == 'admin'){
+
+                return redirect('/dashboard');
+
+            }
+
+            return redirect('/home');
         }
 
         return back()->with(

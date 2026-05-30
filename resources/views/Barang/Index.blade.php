@@ -195,11 +195,13 @@
 
         <div>
 
-            <a href="{{ url('/dashboard') }}"
-               class="back-btn">
+            <a href="{{ auth()->user()->role == 'admin'
+                        ? route('dashboard')
+                        : route('home') }}"
+            class="back-btn">
 
                 <i class="bi bi-arrow-left"></i>
-                Kembali ke Dashboard
+                Kembali
 
             </a>
 

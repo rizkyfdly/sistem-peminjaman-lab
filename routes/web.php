@@ -58,15 +58,23 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', function () {
 
-        if(auth()->user()->role == 'admin'){
+        if(auth()->user()->role != 'admin'){
+            abort(403);
+        }
 
-            return view('admin.dashboard');
+        return view('admin.dashboard');
 
+    })->name('dashboard');
+
+    Route::get('/home', function () {
+
+        if(auth()->user()->role != 'user'){
+            abort(403);
         }
 
         return view('user.home');
 
-    })->name('dashboard');
+    })->name('home');
 
 
     /*
@@ -87,6 +95,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/sop', [SopBarangController::class, 'index'])
         ->name('sop.index');
+
+    Route::get('/sop/{id}', [SopBarangController::class, 'show'])
+        ->name('sop.show');
 
 
     /*
@@ -165,8 +176,8 @@ Route::middleware(['auth', 'role:admin'])
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/sop', [SopBarangController::class, 'index'])
-        ->name('sop.index');
+    // Route::get('/sop', [SopBarangController::class, 'index'])
+    //     ->name('sop.index');
 
     Route::get('/sop/create', [SopBarangController::class, 'create'])
         ->name('sop.create');
@@ -174,8 +185,8 @@ Route::middleware(['auth', 'role:admin'])
     Route::post('/sop', [SopBarangController::class, 'store'])
         ->name('sop.store');
 
-    Route::get('/sop/{id}', [SopBarangController::class, 'show'])
-        ->name('sop.show');
+    // Route::get('/sop/{id}', [SopBarangController::class, 'show'])
+    //     ->name('sop.show');
 
     Route::get('/sop/{id}/edit', [SopBarangController::class, 'edit'])
         ->name('sop.edit');

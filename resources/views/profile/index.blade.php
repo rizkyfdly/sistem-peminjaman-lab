@@ -153,15 +153,30 @@
 <div class="container py-5">
 
     <!-- BACK -->
+    <!-- BACK -->
     <div class="mb-4">
 
-        <a href="/dashboard"
-           class="back-btn">
+        @if(auth()->user()->role == 'admin')
 
-            <i class="bi bi-arrow-left"></i>
-            Kembali ke Dashboard
+            <a href="{{ route('dashboard') }}"
+            class="back-btn">
 
-        </a>
+                <i class="bi bi-arrow-left"></i>
+                Kembali ke Dashboard
+
+            </a>
+
+        @else
+
+            <a href="{{ route('home') }}"
+            class="back-btn">
+
+                <i class="bi bi-arrow-left"></i>
+                Kembali ke Home
+
+            </a>
+
+        @endif
 
     </div>
 

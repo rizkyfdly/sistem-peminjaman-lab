@@ -149,11 +149,13 @@
 
         <div>
 
-            <a href="/dashboard"
-               class="back-btn">
+            <a href="{{ auth()->user()->role == 'admin'
+                        ? route('dashboard')
+                        : route('home') }}"
+            class="back-btn">
 
                 <i class="bi bi-arrow-left"></i>
-                Kembali ke Dashboard
+                Kembali
 
             </a>
 
@@ -254,10 +256,11 @@
                         </td>
 
                         <!-- SOP -->
+                        <!-- SOP -->
                         <td>
 
-                            <a href="{{ route('admin.sop.show', $item->id) }}"
-                               class="detail-link">
+                            <a href="{{ route('sop.show', $item->id) }}"
+                            class="detail-link">
 
                                 <i class="bi bi-file-earmark-text"></i>
                                 Lihat Detail SOP
