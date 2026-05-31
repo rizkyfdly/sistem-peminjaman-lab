@@ -176,8 +176,8 @@ Route::middleware(['auth', 'role:admin'])
     |--------------------------------------------------------------------------
     */
 
-    // Route::get('/sop', [SopBarangController::class, 'index'])
-    //     ->name('sop.index');
+    Route::get('/sop', [SopBarangController::class, 'index'])
+        ->name('sop.index');
 
     Route::get('/sop/create', [SopBarangController::class, 'create'])
         ->name('sop.create');

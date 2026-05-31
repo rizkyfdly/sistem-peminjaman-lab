@@ -239,7 +239,7 @@
 
                     <div class="info-label">
 
-                        Role
+                        NIM
 
                     </div>
 

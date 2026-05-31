@@ -374,4 +374,65 @@ class PeminjamanController extends Controller
             'barang'
         ));
     }
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'barang' => 'required|array',
+        'barang.*.id' => 'required|exists:barang,id',
+        'barang.*.jumlah' => 'required|integer|min:1',
+    ]);
+
+    $peminjaman = Peminjaman::with('detail')->findOrFail($id);
+
+    // User hanya boleh mengedit peminjaman miliknya sendiri
+    if (
+        auth()->user()->role === 'user' &&
+        $peminjaman->user_id != auth()->id()
+    ) {
+        abort(403, 'Akses ditolak');
+    }
+
+    // Hanya boleh diedit jika masih diajukan
+    if ($peminjaman->status !== 'diajukan') {
+        return back()->with(
+            'error',
+            'Peminjaman yang sudah diproses tidak dapat diedit.'
+        );
+    }
+
+    DB::beginTransaction();
+
+    try {
+
+        // Hapus detail lama
+        DetailPeminjaman::where(
+            'peminjaman_id',
+            $peminjaman->id
+        )->delete();
+
+        // Simpan detail baru
+        foreach ($request->barang as $item) {
+
+            DetailPeminjaman::create([
+                'peminjaman_id' => $peminjaman->id,
+                'barang_id'      => $item['id'],
+                'jumlah'         => $item['jumlah'],
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect('/peminjaman')
+            ->with('success', 'Peminjaman berhasil diperbarui');
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return back()->with(
+            'error',
+            $e->getMessage()
+        );
+    }
+}
 }

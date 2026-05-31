@@ -66,7 +66,7 @@ class SopBarangController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.sop.index')
+            ->route('sop.index')
             ->with('success', 'SOP berhasil ditambahkan');
     }
 
@@ -153,7 +153,7 @@ class SopBarangController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.sop.index')
+            ->route('sop.index')
             ->with('success', 'SOP berhasil diupdate');
     }
 

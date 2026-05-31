@@ -126,7 +126,7 @@
     <!-- HEADER -->
     <div class="mb-4">
 
-        <a href="{{ route('admin.sop.index') }}"
+        <a href="{{ route('sop.index') }}"
            class="back-btn">
 
             <i class="bi bi-arrow-left"></i>
