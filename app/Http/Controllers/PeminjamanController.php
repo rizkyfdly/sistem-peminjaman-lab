@@ -101,10 +101,15 @@ class PeminjamanController extends Controller
 
                 if ($item['jumlah'] > $barang->stok) {
 
-                    throw new \Exception(
-                        'Jumlah pinjam ' . $barang->nama_barang .
-                        ' melebihi stok tersedia (' . $barang->stok . ')'
-                    );
+                    DB::rollBack();
+
+                    return back()
+                     ->withInput()
+                    ->with(
+                            'error',
+                             'Stok '.$barang->nama_barang.
+                            ' hanya tersedia '.$barang->stok
+                             );
                 }
 
                 DetailPeminjaman::create([
@@ -117,7 +122,7 @@ class PeminjamanController extends Controller
             DB::commit();
 
             return redirect('/peminjaman')
-                ->with('success', 'Peminjaman berhasil diajukan');
+                ->with('success', 'Pengembalian berhasil dilakukan');
 
         } catch (\Exception $e) {
 
