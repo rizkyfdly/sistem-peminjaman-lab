@@ -312,12 +312,37 @@
                     <div class="info-value">
 
                         {{ $peminjaman->tanggal_pinjam }}
-
+                        <br>
+                        {{substr($peminjaman->jam_pinjam, 0,5)}}
                     </div>
 
                 </div>
 
             </div>
+            <!-- TENGGAT PENGEMBALIAN -->
+        <div class="col-md-3">
+
+            <div class="info-box">
+
+                 <div class="info-title">
+
+                    Tenggat Pengembalian
+
+                </div>
+
+                 <div class="info-value text-danger">
+
+                         {{ $peminjaman->tanggal_deadline }}
+
+                 <br>
+
+             {{ substr($peminjaman->jam_deadline, 0, 5) }}
+
+        </div>
+
+    </div>
+
+</div>
 
         </div>
 

@@ -84,12 +84,16 @@ class UserController extends Controller
         $request->validate([
             'name'  => 'required',
             'email' => 'required|email',
+            'nim_nip' => 'nullable|string|max:50',
+            'jurusan' => 'nullable|string|max:100',
             'foto'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $data = [
             'name'  => $request->name,
             'email' => $request->email,
+            'nim_nip' => $request->nim_nip,
+            'jurusan' => $request->jurusan,
         ];
 
         // upload foto

@@ -177,6 +177,38 @@
 
             </div>
 
+            {{-- NIM / NIP --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    NIM / NIP
+
+                </label>
+
+                <input type="text"
+                    name="nim_nip"
+                    value="{{ $user->nim_nip }}"
+                    class="form-control">
+
+            </div>
+
+            {{-- JURUSAN --}}
+            <div class="mb-4">
+
+                <label class="form-label">
+
+                    Jurusan
+
+                </label>
+
+                <input type="text"
+                    name="jurusan"
+                    value="{{ $user->jurusan }}"
+                    class="form-control">
+
+            </div>
+
             {{-- BUTTON --}}
             <button type="submit"
                     class="btn-save">

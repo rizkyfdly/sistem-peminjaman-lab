@@ -608,7 +608,7 @@
     <!-- LOGO -->
     <div class="sidebar-logo">
 
-        <img src="{{ asset('logo-navbar.png') }}">
+        <img src="{{ asset('logo-labs-farm.png') }}">
 
     </div>
 
@@ -689,7 +689,7 @@
 
                 <p>
 
-                    Dashboard Administrator FarmLab Access
+                    Dashboard Administrator Briegen Labs
 
                 </p>
 
@@ -780,7 +780,7 @@
 
         <h1>
 
-            Dashboard Admin FarmLab Access
+            Dashboard Admin Briegen Labs
 
         </h1>
 

@@ -21,6 +21,8 @@ class Peminjaman extends Model
         'status',
         'kondisi_kembali',
         'denda',
+        'tanggal_deadline',
+        'jam_deadline'
     ];
 
     // relasi ke user

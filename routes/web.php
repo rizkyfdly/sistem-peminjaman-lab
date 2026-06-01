@@ -128,6 +128,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{id}', [PeminjamanController::class, 'update'])
             ->name('update');
 
+        Route::delete('/{id}', [PeminjamanController::class, 'destroy'])
+            ->name('destroy');    
+
         Route::post('/{id}/ajukan-pengembalian',
             [PeminjamanController::class, 'ajukanPengembalian'])
             ->name('ajukanPengembalian');
@@ -212,6 +215,9 @@ Route::middleware(['auth', 'role:admin'])
     Route::post('peminjaman/{id}/approve',
         [PeminjamanController::class, 'approve'])
         ->name('peminjaman.approve');
+
+    #Route::delete('/{id}', [PeminjamanController::class, 'destroy'])
+   # ->name('destroy');
 
     Route::post('peminjaman/{id}/kembali',
         [PeminjamanController::class, 'pengembalian'])

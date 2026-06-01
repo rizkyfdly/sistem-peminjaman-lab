@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>FarmLab Access</title>
+    <title>BriegenLabs</title>
 
     {{-- BOOTSTRAP --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -17,6 +17,9 @@
     {{-- GOOGLE FONT --}}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
+
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 <style>
 
@@ -262,6 +265,8 @@
 
     /* CONTACT */
 
+/* CONTACT */
+
     .contact-section{
 
         background: #0B1F66;
@@ -312,16 +317,61 @@
 
     .contact-item{
 
-        margin-bottom: 30px;
+        background: #F8FAFF;
+
+        padding: 18px 20px;
+
+        border-radius: 20px;
+
+        border: 1px solid #E8EEFF;
+
+        transition: 0.3s;
+
+        margin-bottom: 18px;
+    }
+
+    .contact-item:hover{
+
+        transform: translateY(-4px);
+
+        box-shadow: 0 12px 25px rgba(21,101,255,0.08);
+    }
+
+    .contact-icon{
+
+        width: 55px;
+
+        height: 55px;
+
+        min-width: 55px;
+
+        border-radius: 16px;
+
+        background: rgba(21,101,255,0.12);
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        margin-right: 15px;
+    }
+
+    .contact-icon i{
+
+        font-size: 22px;
+
+        color: #1565FF;
     }
 
     .contact-item h6{
 
         font-weight: 700;
 
-        color: #1565FF;
+        color: #0B1F66;
 
-        margin-bottom: 10px;
+        margin-bottom: 4px;
     }
 
     .contact-item p{
@@ -330,7 +380,7 @@
 
         color: #6c757d;
 
-        font-size: 17px;
+        font-size: 15px;
     }
 
     /* FOOTER */
@@ -397,8 +447,8 @@
         <a class="navbar-brand"
            href="/">
 
-            <img src="{{ asset('logo-navbar.png') }}"
-                 alt="FarmLab Access">
+            <img src="{{ asset('logo-labs-farm.png') }}"
+                 alt="BriegenLabs">
 
         </a>
 
@@ -491,7 +541,7 @@
                 Selamat Datang di
                 <span>
 
-                    FarmLab Access
+                    BriegenLabs
 
                 </span>
 
@@ -664,50 +714,84 @@
                     </div>
 
                     <!-- RIGHT -->
-                    <div class="contact-right">
+                        <div class="contact-right">
 
-                        <h2 class="fw-bold mb-4">
+                            <h2 class="fw-bold text-center mb-4">
 
-                            Contact Information
+                                Contact Info
 
-                        </h2>
+                            </h2>
 
-                        <div class="contact-item">
+                            <!-- EMAIL -->
+                            <div class="contact-item d-flex align-items-center">
 
-                            <h6>Email</h6>
+                                <div class="contact-icon">
 
-                            <p>
+                                    <i class="bi bi-envelope-fill"></i>
 
-                                farmlabaccess@gmail.com
+                                </div>
 
-                            </p>
+                                <div>
+
+                                    <h6>Email</h6>
+
+                                    <p>
+
+                                        briegenlabs@gmail.com
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <!-- LOCATION -->
+                            <div class="contact-item d-flex align-items-center">
+
+                                <div class="contact-icon">
+
+                                    <i class="bi bi-geo-alt-fill"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h6>Location</h6>
+
+                                    <p>
+
+                                        Laboratorium Farmasi
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <!-- TELEPHONE -->
+                            <div class="contact-item d-flex align-items-center">
+
+                                <div class="contact-icon">
+
+                                    <i class="bi bi-telephone-fill"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h6>Telephone</h6>
+
+                                    <p>
+
+                                        081234567890
+
+                                    </p>
+
+                                </div>
+
+                            </div>
 
                         </div>
-
-                        <div class="contact-item">
-
-                            <h6>Location</h6>
-
-                            <p>
-
-                                Laboratorium Farmasi
-
-                            </p>
-
-                        </div>
-
-                        <div class="contact-item">
-
-                            <h6>System</h6>
-
-                            <p>
-
-                                FarmLab Access v1.0
-
-                            </p>
-
-                        </div>
-
                     </div>
 
                 </div>
@@ -723,7 +807,7 @@
 <!-- FOOTER -->
 <footer class="footer">
 
-    © 2026 FarmLab Access — Sistem Informasi Laboratorium Farmasi
+    © 2026 BriegenLabs — Sistem Informasi Laboratorium Farmasi
 
 </footer>
 

@@ -27,6 +27,7 @@
             <th>Kode Transaksi</th>
             <th>Barang</th>
             <th>Jumlah</th>
+            
 
             @if(auth()->user()->role == 'admin')
                 <th>Aksi</th>

@@ -254,7 +254,8 @@
                         <th>Kode</th>
                         <th>User</th>
                         <th>Status</th>
-                        <th>Tanggal</th>
+                        <th>Waktu Pinjam</th>
+                        <th>Tenggat Pengembalian</th>
                         <th class="text-center">Aksi</th>
 
                     </tr>
@@ -319,7 +320,32 @@
 
                         </td>
 
-                        <td>{{ $p->tanggal_pinjam }}</td>
+                        <td>
+                                {{ $p->tanggal_pinjam }}
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    {{ substr($p->jam_pinjam,0,5) }}
+
+                                </small>
+
+                        </td>
+
+                        <td>
+
+                            {{ $p->tanggal_deadline }}
+
+                            <br>
+
+                            <small class="text-danger fw-semibold">
+
+                                {{ substr($p->jam_deadline,0,5) }}
+
+                            </small>
+
+                        </td>
 
                         <td>
 
@@ -341,6 +367,14 @@
                                     <i class="bi bi-pencil"></i>
 
                                 </a>
+                                <!-- DELETE -->
+                                <form action="/peminjaman/{{ $p->id }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('Hapus peminjaman ini?')" class="btn action-btn">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
 
                             @endif
                         </div>

@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Login - FarmLab Access</title>
+    <title>Login - BriegenLabs</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -103,7 +103,7 @@
 
         .login-logo{
 
-            max-width: 450px;
+            max-width: 600px;
         }
 
         .login-text{
@@ -290,7 +290,7 @@
                     <!-- CONTENT -->
                     <div class="login-content">
 
-                        <img src="{{ asset('logo-lab-fix.png') }}"
+                        <img src="{{ asset('logo-login.png') }}"
                              class="login-logo img-fluid mb-4">
 
                         <p class="login-text">

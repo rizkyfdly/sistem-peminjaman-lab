@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('kondisi_kembali')->nullable();
 
             $table->integer('denda')->default(0);
+            
 
             $table->timestamps();
         });

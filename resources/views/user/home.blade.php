@@ -7,7 +7,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>User Home - FarmLab Access</title>
+    <title>User Home - BriegenLabs</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -355,7 +355,7 @@
 <div class="topbar">
 
     <!-- LOGO -->
-    <img src="{{ asset('logo-navbar.png') }}"
+    <img src="{{ asset('logo-labs-farm.png') }}"
          class="logo">
 
     <!-- PROFILE -->
@@ -449,7 +449,7 @@
             <h1 class="hero-title">
 
                 Selamat Datang di
-                FarmLab Access
+                BriegenLabs
 
             </h1>
 

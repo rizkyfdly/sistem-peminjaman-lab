@@ -75,11 +75,18 @@ class PeminjamanController extends Controller
             | SIMPAN PEMINJAMAN
             |--------------------------------------------------------------------------
             */
+            $waktuPinjam = now();
+            $deadline = $waktuPinjam->copy()->addHours(4)->addMinutes(30);
             $peminjaman = Peminjaman::create([
                 'kode_transaksi' => $kode,
                 'user_id' => auth()->id(),
-                'tanggal_pinjam' => now()->toDateString(),
-                'jam_pinjam' => now()->toTimeString(),
+
+                'tanggal_pinjam' => $waktuPinjam->toDateString(),
+                'jam_pinjam' => $waktuPinjam->format('H:i:s'),
+
+                'tanggal_deadline' => $deadline->toDateString(),
+                'jam_deadline' => $deadline->format('H:i:s'),
+
                 'status' => 'diajukan',
             ]);
 
@@ -89,6 +96,16 @@ class PeminjamanController extends Controller
             |--------------------------------------------------------------------------
             */
             foreach ($request->barang as $item) {
+
+                $barang = Barang::findOrFail($item['id']);
+
+                if ($item['jumlah'] > $barang->stok) {
+
+                    throw new \Exception(
+                        'Jumlah pinjam ' . $barang->nama_barang .
+                        ' melebihi stok tersedia (' . $barang->stok . ')'
+                    );
+                }
 
                 DetailPeminjaman::create([
                     'peminjaman_id' => $peminjaman->id,
@@ -327,40 +344,78 @@ class PeminjamanController extends Controller
             );
         }
     }
-     public function destroy($id)
-    {
-        // Hanya admin yang boleh hapus
-        if (auth()->user()->role !== 'admin') {
+   public function destroy($id)
+{
+    $peminjaman = Peminjaman::with('detail')
+                    ->findOrFail($id);
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN
+    |--------------------------------------------------------------------------
+    */
+    if (auth()->user()->role === 'user') {
+
+        if ($peminjaman->status !== 'diajukan') {
+
+            return back()->with(
+                'error',
+                'Hanya peminjaman berstatus diajukan yang dapat dihapus.'
+            );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER
+    |--------------------------------------------------------------------------
+    */
+    else {
+
+        // hanya boleh hapus miliknya sendiri
+        if ($peminjaman->user_id != auth()->id()) {
+
             abort(403, 'Akses ditolak.');
         }
 
-        // Ambil data + detailnya
-        $peminjaman = Peminjaman::with('detail')->findOrFail($id);
-
-        // AMAN: Hanya boleh hapus jika status masih 'diajukan'
+        // hanya boleh hapus saat diajukan
         if ($peminjaman->status !== 'diajukan') {
-            return back()->with('error', 'Hanya peminjaman berstatus "diajukan" yang dapat dihapus.');
-        }
 
-        DB::beginTransaction();
-        try {
-            // Hapus detail dulu (hindari error foreign key)
-            foreach ($peminjaman->detail as $d) {
-                $d->delete();
-            }
-
-            // Hapus data utama
-            $peminjaman->delete();
-
-            DB::commit();
-
-            return back()->with('success', 'Data peminjaman berhasil dihapus.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+            return back()->with(
+                'error',
+                'Peminjaman yang sudah diproses tidak dapat dihapus.'
+            );
         }
     }
+
+    DB::beginTransaction();
+
+    try {
+
+        foreach ($peminjaman->detail as $d) {
+
+            $d->delete();
+        }
+
+        $peminjaman->delete();
+
+        DB::commit();
+
+        return back()->with(
+            'success',
+            'Data peminjaman berhasil dihapus.'
+        );
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return back()->with(
+            'error',
+            'Gagal menghapus data: ' . $e->getMessage()
+        );
+    }
+}
 
     public function edit($id)
     {
@@ -369,70 +424,95 @@ class PeminjamanController extends Controller
 
         $barang = Barang::all();
 
+            if ($peminjaman->status !== 'diajukan') {
+
+                return redirect('/peminjaman')
+                    ->with(
+                        'error',
+                        'Hanya peminjaman berstatus diajukan yang dapat diedit.'
+                    );
+            }
+
         return view('peminjaman.edit', compact(
             'peminjaman',
             'barang'
         ));
     }
     public function update(Request $request, $id)
-{
-    $request->validate([
-        'barang' => 'required|array',
-        'barang.*.id' => 'required|exists:barang,id',
-        'barang.*.jumlah' => 'required|integer|min:1',
-    ]);
+    {
+        $request->validate([
+            'barang' => 'required|array',
+            'barang.*.id' => 'required|exists:barang,id',
+            'barang.*.jumlah' => 'required|integer|min:1',
+        ]);
 
-    $peminjaman = Peminjaman::with('detail')->findOrFail($id);
+        $peminjaman = Peminjaman::with('detail')
+                        ->findOrFail($id);
 
-    // User hanya boleh mengedit peminjaman miliknya sendiri
-    if (
-        auth()->user()->role === 'user' &&
-        $peminjaman->user_id != auth()->id()
-    ) {
-        abort(403, 'Akses ditolak');
-    }
-
-    // Hanya boleh diedit jika masih diajukan
-    if ($peminjaman->status !== 'diajukan') {
-        return back()->with(
-            'error',
-            'Peminjaman yang sudah diproses tidak dapat diedit.'
-        );
-    }
-
-    DB::beginTransaction();
-
-    try {
-
-        // Hapus detail lama
-        DetailPeminjaman::where(
-            'peminjaman_id',
-            $peminjaman->id
-        )->delete();
-
-        // Simpan detail baru
-        foreach ($request->barang as $item) {
-
-            DetailPeminjaman::create([
-                'peminjaman_id' => $peminjaman->id,
-                'barang_id'      => $item['id'],
-                'jumlah'         => $item['jumlah'],
-            ]);
+        if (
+            auth()->user()->role === 'user' &&
+            $peminjaman->user_id != auth()->id()
+        ) {
+            abort(403);
         }
 
-        DB::commit();
+        if ($peminjaman->status !== 'diajukan') {
+            return back()->with(
+                'error',
+                'Hanya peminjaman berstatus diajukan yang dapat diedit.'
+            );
+        }
 
-        return redirect('/peminjaman')
-            ->with('success', 'Peminjaman berhasil diperbarui');
+        DB::beginTransaction();
 
-    } catch (\Exception $e) {
+        try {
 
-        DB::rollBack();
+            // cek stok dulu
+            foreach ($request->barang as $item) {
 
-        return back()->with(
-            'error',
-            $e->getMessage()
-        );
+                $barang = Barang::findOrFail($item['id']);
+
+                if ($item['jumlah'] > $barang->stok) {
+
+                    throw new \Exception(
+                        'Jumlah pinjam ' .
+                        $barang->nama_barang .
+                        ' melebihi stok tersedia (' .
+                        $barang->stok .
+                        ')'
+                    );
+                }
+            }
+
+            // hapus detail lama
+            $peminjaman->detail()->delete();
+
+            // simpan detail baru
+            foreach ($request->barang as $item) {
+
+                DetailPeminjaman::create([
+                    'peminjaman_id' => $peminjaman->id,
+                    'barang_id' => $item['id'],
+                    'jumlah' => $item['jumlah'],
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect('/peminjaman')
+                ->with(
+                    'success',
+                    'Peminjaman berhasil diperbarui'
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
+        }
     }
-}
 }

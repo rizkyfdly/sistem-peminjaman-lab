@@ -211,9 +211,35 @@
 
                 </h1>
 
-                <div class="profile-role mt-2 mb-4">
+                <div class="info-card">
 
-                    {{ auth()->user()->role }}
+                    <div class="info-label">
+
+                        NIM / NIP
+
+                    </div>
+
+                    <div class="info-value">
+
+                        {{ auth()->user()->nim_nip }}
+
+                    </div>
+
+                </div>
+
+                <div class="info-card">
+
+                    <div class="info-label">
+
+                        Jurusan
+
+                    </div>
+
+                    <div class="info-value">
+
+                        {{ auth()->user()->jurusan }}
+
+                    </div>
 
                 </div>
 
@@ -234,22 +260,7 @@
 
                 </div>
 
-                <!-- ROLE -->
-                <div class="info-card">
 
-                    <div class="info-label">
-
-                        NIM
-
-                    </div>
-
-                    <div class="info-value">
-
-                        {{ auth()->user()->role }}
-
-                    </div>
-
-                </div>
 
                 <!-- BERGABUNG -->
                 <div class="info-card">
