@@ -89,11 +89,30 @@
 
         .back-btn{
 
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
             text-decoration: none;
 
             color: #0B1F66;
 
             font-weight: 600;
+
+            padding: 10px 18px;
+
+            border-radius: 12px;
+
+            transition: 0.3s;
+        }
+
+        .back-btn:hover{
+            
+            background: rgb(21, 103, 255);
+
+            color: #fdfefe;
         }
 
     </style>

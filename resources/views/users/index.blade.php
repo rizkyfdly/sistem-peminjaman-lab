@@ -53,10 +53,21 @@
     }
 
     .back-btn{
-        text-decoration:none;
-        color:#0B1F66;
-        font-weight:600;
-    }
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #0B1F66;
+        font-weight: 600;
+        padding: 10px 18px;
+        border-radius: 12px;
+        transition: 0.3s;
+        }
+
+        .back-btn:hover{      
+            background: rgb(21, 103, 255);
+            color: #fdfefe;
+        }
 
     .btn-add{
         background:#1565FF;
@@ -209,12 +220,6 @@
 
 <div class="container py-4">
 
-<a href="/dashboard" class="back-btn">
-
-    <i class="bi bi-arrow-left"></i>
-    Kembali ke Dashboard
-
-</a>
 
 <div class="page-header mt-3">
 
@@ -547,6 +552,16 @@
 
     </div>
 
+</div>
+
+<div class="mt-5">
+    <a href="/dashboard"
+       class="back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+        Kembali
+
+    </a>
 </div>
 
 </div>

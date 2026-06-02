@@ -175,12 +175,33 @@
 
         .back-btn{
 
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
             text-decoration: none;
 
             color: #0B1F66;
 
             font-weight: 600;
+
+            padding: 10px 18px;
+
+            border-radius: 12px;
+
+            transition: 0.3s;
         }
+
+        .back-btn:hover{
+            
+            background: rgb(21, 103, 255);
+
+            color: #fdfefe;
+        }
+
+        
 
     </style>
 
@@ -193,25 +214,11 @@
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div>
-
-            <a href="{{ auth()->user()->role == 'admin'
-                        ? route('dashboard')
-                        : route('home') }}"
-            class="back-btn">
-
-                <i class="bi bi-arrow-left"></i>
-                Kembali
-
-            </a>
-
             <h1 class="page-title mt-3">
 
                 📦 Data Barang Laboratorium
 
             </h1>
-
-        </div>
 
         @if(auth()->user()->role == 'admin')
 
@@ -406,6 +413,20 @@
         </div>
 
     @endif
+
+        <div class="mt-5">
+
+        <a href="{{ auth()->user()->role == 'admin'
+                    ? route('dashboard')
+                    : route('home') }}"
+        class="back-btn">
+
+            <i class="bi bi-arrow-left"></i>
+            Kembali
+
+        </a>
+
+    </div>
 
 </div>
 
