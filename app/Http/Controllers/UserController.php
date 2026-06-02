@@ -19,20 +19,37 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store(Request $request)
-    {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'nim_nip' => $request->nim_nip,
-            'jurusan' => $request->jurusan,
-            'kelas' => $request->kelas,
-            'role' => $request->role ?? 'user',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:6',
+        'role' => 'required|in:admin,user',
+    ], [
+        'name.required' => 'Nama wajib diisi.',
+        'email.required' => 'Email wajib diisi.',
+        'email.email' => 'Format email tidak valid.',
+        'email.unique' => 'Email sudah digunakan.',
+        'password.required' => 'Password wajib diisi.',
+        'password.min' => 'Password minimal 6 karakter.',
+        'role.required' => 'Role wajib dipilih.',
+    ]);
 
-        return redirect()->route('admin.users.index');
-    }
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'nim_nip' => $request->nim_nip,
+        'jurusan' => $request->jurusan,
+        'kelas' => $request->kelas,
+        'role' => $request->role,
+    ]);
+
+    return redirect()
+        ->route('admin.users.index')
+        ->with('success', 'User berhasil ditambahkan');
+}
 
     public function edit($id)
     {
