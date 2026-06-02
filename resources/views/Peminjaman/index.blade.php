@@ -174,6 +174,24 @@
             border-radius: 12px !important;
         }
 
+        .table td,
+        .table th{
+            white-space: nowrap;
+        }
+
+        .table td:nth-child(7){
+            white-space: normal;
+            max-width: 180px;
+        }
+
+        .action-btn{
+            margin-right: 0;
+        }
+
+        .table-responsive{
+            overflow-x: auto;
+        }
+
     </style>
 
 </head>
@@ -247,112 +265,106 @@
             <table class="table align-middle">
 
                 <thead>
-
                     <tr>
-
-                        <th>No</th>
-                        <th>Kode</th>
-                        <th>User</th>
-                        <th>Status</th>
-                        <th>Waktu Pinjam</th>
-                        <th>Tenggat Pengembalian</th>
-                        <th class="text-center">Aksi</th>
-
+                        <th width="5%">No</th>
+                        <th width="12%">Kode</th>
+                        <th width="12%">User</th>
+                        <th width="10%">Status</th>
+                        <th width="12%">Pinjam</th>
+                        <th width="12%">Deadline</th>
+                        <th width="17%">Praktikum</th>
+                        <th width="20%" class="text-center">Aksi</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
 
-                    @foreach($peminjaman as $key => $p)
+                @foreach($peminjaman as $key => $p)
 
-                    <tr>
+                <tr>
 
-                        <td>{{ $key + 1 }}</td>
+                    <td>{{ $key + 1 }}</td>
 
-                        <td>
+                    <td>
+                        <span class="fw-bold text-primary">
+                            {{ $p->kode_transaksi }}
+                        </span>
+                    </td>
 
-                            <strong>
+                    <td>{{ $p->user->name }}</td>
 
-                                {{ $p->kode_transaksi }}
+                    <td>
 
-                            </strong>
+                        @if($p->status == 'diajukan')
 
-                        </td>
+                            <span class="badge-status badge-diajukan">
+                                Diajukan
+                            </span>
 
-                        <td>{{ $p->user->name }}</td>
+                        @elseif($p->status == 'dipinjam')
 
-                        <td>
+                            <span class="badge-status badge-dipinjam">
+                                Dipinjam
+                            </span>
 
-                            @if($p->status == 'diajukan')
+                        @elseif($p->status == 'menunggu_verifikasi')
 
-                                <span class="badge-status badge-diajukan">
+                            <span class="badge-status badge-verifikasi">
+                                Verifikasi
+                            </span>
 
-                                    Diajukan
+                        @elseif($p->status == 'dikembalikan')
 
-                                </span>
+                            <span class="badge-status badge-kembali">
+                                Dikembalikan
+                            </span>
 
-                            @elseif($p->status == 'dipinjam')
+                        @endif
 
-                                <span class="badge-status badge-dipinjam">
+                    </td>
 
-                                    Dipinjam
+                    <td>
 
-                                </span>
+                        {{ $p->tanggal_pinjam }}
 
-                            @elseif($p->status == 'menunggu_verifikasi')
+                        <br>
 
-                                <span class="badge-status badge-verifikasi">
+                        <small class="text-muted">
 
-                                    Verifikasi
+                            {{ substr($p->jam_pinjam,0,5) }}
 
-                                </span>
+                        </small>
 
-                            @elseif($p->status == 'dikembalikan')
+                    </td>
 
-                                <span class="badge-status badge-kembali">
+                    <td>
 
-                                    Dikembalikan
+                        {{ $p->tanggal_deadline }}
 
-                                </span>
+                        <br>
 
-                            @endif
+                        <small class="text-danger fw-semibold">
 
-                        </td>
+                            {{ substr($p->jam_deadline,0,5) }}
 
-                        <td>
-                                {{ $p->tanggal_pinjam }}
+                        </small>
 
-                                <br>
+                    </td>
 
-                                <small class="text-muted">
+                    <td>
+                        <small class="fw-semibold text-dark">
+                            {{ $p->jenis_praktikum }}
+                        </small>
+                    </td>
 
-                                    {{ substr($p->jam_pinjam,0,5) }}
+                    <!-- AKSI -->
+                    <td class="text-center">
 
-                                </small>
+                        <!-- Tombol -->
+                        <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                        </td>
-
-                        <td>
-
-                            {{ $p->tanggal_deadline }}
-
-                            <br>
-
-                            <small class="text-danger fw-semibold">
-
-                                {{ substr($p->jam_deadline,0,5) }}
-
-                            </small>
-
-                        </td>
-
-                        <td>
-
-                            <!-- DETAIL -->
-                        <div class="d-flex justify-content-center gap-2 mb-2">
                             <a href="/peminjaman/{{ $p->id }}"
-                               class="btn action-btn">
+                            class="btn action-btn">
 
                                 <i class="bi bi-eye"></i>
 
@@ -360,203 +372,199 @@
 
                             @if(auth()->user()->role == 'user')
 
-                                <!-- EDIT -->
                                 <a href="/peminjaman/{{ $p->id }}/edit"
                                 class="btn action-btn">
 
                                     <i class="bi bi-pencil"></i>
 
                                 </a>
-                                <!-- DELETE -->
-                                <form action="/peminjaman/{{ $p->id }}" method="POST" class="d-inline">
+
+                                <form action="/peminjaman/{{ $p->id }}"
+                                    method="POST"
+                                    class="d-inline">
+
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Hapus peminjaman ini?')" class="btn action-btn">
+
+                                    <button type="submit"
+                                            onclick="return confirm('Hapus peminjaman ini?')"
+                                            class="btn action-btn">
+
                                         <i class="bi bi-trash"></i>
+
                                     </button>
+
                                 </form>
 
                             @endif
+
                         </div>
 
-                            <!-- ========================= -->
-                            <!-- USER -->
-                            <!-- ========================= -->
-                            @if(auth()->user()->role == 'user')
+                        <!-- ========================= -->
+                        <!-- USER -->
+                        <!-- ========================= -->
+                        @if(auth()->user()->role == 'user')
 
-                                @if($p->status == 'dipinjam')
+                            @if($p->status == 'dipinjam')
 
-                                    <div class="mini-card">
+                                <div class="mini-card">
 
-                                        <form action="{{ route('peminjaman.ajukanPengembalian', $p->id) }}"
-                                              method="POST">
+                                    <form action="{{ route('peminjaman.ajukanPengembalian', $p->id) }}"
+                                        method="POST">
 
-                                            @csrf
+                                        @csrf
 
-                                            <select name="kondisi"
-                                                    class="form-select mb-3"
-                                                    required>
+                                        <select name="kondisi"
+                                                class="form-select mb-3"
+                                                required>
 
-                                                <option value="">
-                                                    Pilih Kondisi
-                                                </option>
+                                            <option value="">Pilih Kondisi</option>
 
-                                                <option value="baik">
-                                                    Baik
-                                                </option>
+                                            <option value="baik">Baik</option>
 
-                                                <option value="rusak ringan">
-                                                    Rusak Ringan
-                                                </option>
+                                            <option value="rusak ringan">Rusak Ringan</option>
 
-                                                <option value="rusak berat">
-                                                    Rusak Berat
-                                                </option>
+                                            <option value="rusak berat">Rusak Berat</option>
 
-                                                <option value="hilang">
-                                                    Hilang
-                                                </option>
+                                            <option value="hilang">Hilang</option>
 
-                                            </select>
+                                        </select>
 
-                                            <button type="submit"
-                                                    class="btn-main">
+                                        <button type="submit"
+                                                class="btn-main">
 
-                                                Ajukan Pengembalian
+                                            Ajukan Pengembalian
 
-                                            </button>
+                                        </button>
 
-                                        </form>
+                                    </form>
 
-                                    </div>
-
-                                @endif
+                                </div>
 
                             @endif
 
-                            <!-- ========================= -->
-                            <!-- ADMIN -->
-                            <!-- ========================= -->
-                            @if(auth()->user()->role == 'admin')
+                        @endif
 
-                                @if($p->status == 'diajukan')
+                        <!-- ========================= -->
+                        <!-- ADMIN -->
+                        <!-- ========================= -->
+                        @if(auth()->user()->role == 'admin')
 
-                                    <div class="mt-2">
+                            @if($p->status == 'diajukan')
 
-                                        <form action="{{ route('admin.peminjaman.approve', $p->id) }}"
-                                              method="POST"
-                                              class="d-inline">
+                                <div class="mt-2">
 
-                                            @csrf
+                                    <form action="{{ route('admin.peminjaman.approve', $p->id) }}"
+                                        method="POST"
+                                        class="d-inline">
 
-                                            <button type="submit"
-                                                    class="btn btn-success btn-sm rounded-3">
+                                        @csrf
 
-                                                Approve
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm rounded-3">
 
-                                            </button>
+                                            Approve
 
-                                        </form>
+                                        </button>
 
-                                        <form action="{{ route('admin.peminjaman.destroy', $p->id) }}"
-                                              method="POST"
-                                              class="d-inline">
+                                    </form>
 
-                                            @csrf
-                                            @method('DELETE')
+                                    <form action="{{ route('admin.peminjaman.destroy', $p->id) }}"
+                                        method="POST"
+                                        class="d-inline">
 
-                                            <button type="submit"
-                                                    onclick="return confirm('Yakin ingin menghapus?')"
-                                                    class="btn btn-danger btn-sm rounded-3">
+                                        @csrf
+                                        @method('DELETE')
 
-                                                Hapus
+                                        <button type="submit"
+                                                onclick="return confirm('Yakin ingin menghapus?')"
+                                                class="btn btn-danger btn-sm rounded-3">
 
-                                            </button>
+                                            Hapus
 
-                                        </form>
+                                        </button>
 
-                                    </div>
+                                    </form>
 
-                                @endif
-
-                                @if($p->status == 'menunggu_verifikasi')
-
-                                    <div class="mini-card">
-
-                                        <p>
-
-                                            <strong>Kondisi User:</strong>
-
-                                            {{ $p->kondisi_kembali }}
-
-                                        </p>
-
-                                        <form action="{{ route('admin.peminjaman.kembali', $p->id) }}"
-                                              method="POST">
-
-                                            @csrf
-
-                                            <textarea name="catatan_admin"
-                                                      class="form-control mb-3"
-                                                      rows="3"
-                                                      placeholder="Tindakan / catatan admin"></textarea>
-
-                                            <button type="submit"
-                                                    class="btn-main">
-
-                                                Verifikasi
-
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                @endif
-
-                                @if($p->status == 'dikembalikan')
-
-                                    <div class="mini-card">
-
-                                        <p>
-
-                                            <strong>Kondisi:</strong>
-
-                                            {{ $p->kondisi_kembali }}
-
-                                        </p>
-
-                                        <p>
-
-                                            <strong>Denda:</strong>
-
-                                            Rp {{ number_format($p->denda, 0, ',', '.') }}
-
-                                        </p>
-
-                                        @if($p->catatan_admin)
-
-                                            <p class="mb-0">
-
-                                                <strong>Catatan:</strong>
-
-                                                {{ $p->catatan_admin }}
-
-                                            </p>
-
-                                        @endif
-
-                                    </div>
-
-                                @endif
+                                </div>
 
                             @endif
 
-                        </td>
+                            @if($p->status == 'menunggu_verifikasi')
 
-                    </tr>
+                                <div class="mini-card">
 
-                    @endforeach
+                                    <p>
+                                        <strong>Kondisi User:</strong>
+                                        {{ $p->kondisi_kembali }}
+                                    </p>
+
+                                    <form action="{{ route('admin.peminjaman.kembali', $p->id) }}"
+                                        method="POST">
+
+                                        @csrf
+
+                                        <textarea name="catatan_admin"
+                                                class="form-control mb-3"
+                                                rows="3"
+                                                placeholder="Tindakan / catatan admin"></textarea>
+
+                                        <button type="submit"
+                                                class="btn-main">
+
+                                            Verifikasi
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            @endif
+
+                            @if($p->status == 'dikembalikan')
+
+                                <div class="mini-card">
+
+                                    <p>
+
+                                        <strong>Kondisi:</strong>
+
+                                        {{ $p->kondisi_kembali }}
+
+                                    </p>
+
+                                    <p>
+
+                                        <strong>Denda:</strong>
+
+                                        Rp {{ number_format($p->denda, 0, ',', '.') }}
+
+                                    </p>
+
+                                    @if($p->catatan_admin)
+
+                                        <p class="mb-0">
+
+                                            <strong>Catatan:</strong>
+
+                                            {{ $p->catatan_admin }}
+
+                                        </p>
+
+                                    @endif
+
+                                </div>
+
+                            @endif
+
+                        @endif
+
+                    </td>
+
+                </tr>
+
+                @endforeach
 
                 </tbody>
 

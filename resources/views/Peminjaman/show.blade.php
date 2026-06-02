@@ -298,6 +298,26 @@
 
             </div>
 
+            <div class="col-md-3">
+
+                <div class="info-box">
+
+                    <div class="info-title">
+
+                        Jenis Praktikum
+
+                    </div>
+
+                    <div class="info-value">
+
+                        {{ $peminjaman->jenis_praktikum }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <!-- TANGGAL -->
             <div class="col-md-3">
 

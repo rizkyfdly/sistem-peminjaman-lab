@@ -59,6 +59,7 @@ class PeminjamanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'jenis_praktikum' => 'required',
             'barang' => 'required|array',
             'barang.*.id' => 'required|exists:barang,id',
             'barang.*.jumlah' => 'required|integer|min:1',
@@ -80,6 +81,7 @@ class PeminjamanController extends Controller
             $peminjaman = Peminjaman::create([
                 'kode_transaksi' => $kode,
                 'user_id' => auth()->id(),
+                'jenis_praktikum' => $request->jenis_praktikum,
 
                 'tanggal_pinjam' => $waktuPinjam->toDateString(),
                 'jam_pinjam' => $waktuPinjam->format('H:i:s'),
@@ -122,7 +124,7 @@ class PeminjamanController extends Controller
             DB::commit();
 
             return redirect('/peminjaman')
-                ->with('success', 'Pengembalian berhasil dilakukan');
+                ->with('success', 'Peminjaman berhasil dilakukan');
 
         } catch (\Exception $e) {
 
@@ -349,78 +351,79 @@ class PeminjamanController extends Controller
             );
         }
     }
-   public function destroy($id)
-{
-    $peminjaman = Peminjaman::with('detail')
-                    ->findOrFail($id);
+    public function destroy($id)
+    {
+        $peminjaman = Peminjaman::with('detail')
+                        ->findOrFail($id);
 
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN
-    |--------------------------------------------------------------------------
-    */
-    if (auth()->user()->role === 'user') {
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN
+        |--------------------------------------------------------------------------
+        */
+        if (auth()->user()->role === 'user') {
 
-        if ($peminjaman->status !== 'diajukan') {
+            if ($peminjaman->status !== 'diajukan') {
+
+                return back()->with(
+                    'error',
+                    'Hanya peminjaman berstatus diajukan yang dapat dihapus.'
+                );
+            }
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER
+        |--------------------------------------------------------------------------
+        */
+        else {
+
+            // hanya boleh hapus miliknya sendiri
+            if ($peminjaman->user_id != auth()->id()) {
+
+                abort(403, 'Akses ditolak.');
+            }
+
+            // hanya boleh hapus saat diajukan
+            if ($peminjaman->status !== 'diajukan') {
+
+                return back()->with(
+                    'error',
+                    'Peminjaman yang sudah diproses tidak dapat dihapus.'
+                );
+            }
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            foreach ($peminjaman->detail as $d) {
+
+                $d->delete();
+            }
+
+            $peminjaman->delete();
+
+            DB::commit();
+
+            return back()->with(
+                'success',
+                'Data peminjaman berhasil dihapus.'
+            );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
 
             return back()->with(
                 'error',
-                'Hanya peminjaman berstatus diajukan yang dapat dihapus.'
+                'Gagal menghapus data: ' . $e->getMessage()
             );
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | USER
-    |--------------------------------------------------------------------------
-    */
-    else {
-
-        // hanya boleh hapus miliknya sendiri
-        if ($peminjaman->user_id != auth()->id()) {
-
-            abort(403, 'Akses ditolak.');
-        }
-
-        // hanya boleh hapus saat diajukan
-        if ($peminjaman->status !== 'diajukan') {
-
-            return back()->with(
-                'error',
-                'Peminjaman yang sudah diproses tidak dapat dihapus.'
-            );
-        }
-    }
-
-    DB::beginTransaction();
-
-    try {
-
-        foreach ($peminjaman->detail as $d) {
-
-            $d->delete();
-        }
-
-        $peminjaman->delete();
-
-        DB::commit();
-
-        return back()->with(
-            'success',
-            'Data peminjaman berhasil dihapus.'
-        );
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-
-        return back()->with(
-            'error',
-            'Gagal menghapus data: ' . $e->getMessage()
-        );
-    }
-}
 
     public function edit($id)
     {

@@ -14,6 +14,7 @@ class Peminjaman extends Model
     protected $fillable = [
         'kode_transaksi',
         'user_id',
+        'jenis_praktikum',
         'tanggal_pinjam',
         'jam_pinjam',
         'tanggal_kembali',
@@ -22,7 +23,7 @@ class Peminjaman extends Model
         'kondisi_kembali',
         'denda',
         'tanggal_deadline',
-        'jam_deadline'
+        'jam_deadline',
     ];
 
     // relasi ke user

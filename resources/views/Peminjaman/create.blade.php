@@ -195,60 +195,121 @@
             <input type="hidden"
                    name="user_id"
                    value="{{ auth()->id() }}">
+            
+            <div class="col-md-12">
 
+                <label class="form-label fw-semibold">
+
+                    Jenis Praktikum
+
+                </label>
+
+                <select name="jenis_praktikum"
+                        class="form-select"
+                        required>
+
+                    <option value="">
+                        Pilih Praktikum
+                    </option>
+
+                    <option>BOTANI FARMASI</option>
+                    <option>KIMIA FARMASI DASAR</option>
+                    <option>ANATOMI DAN FISIOLOGI MANUSIA</option>
+                    <option>FARMAKOLOGI I</option>
+                    <option>FARMASETIKA</option>
+                    <option>FARMASI FISIKA</option>
+                    <option>BIOKIMIA</option>
+                    <option>FARMAKOLOGI II</option>
+                    <option>MIKROBIOLOGI</option>
+                    <option>FARMAKOGNOSI</option>
+                    <option>KIMIA ORGANIK</option>
+                    <option>KIMIA ANALISIS</option>
+                    <option>ANALISIS FARMASI</option>
+                    <option>FTS PADAT</option>
+                    <option>FARMAKOKINETIKA</option>
+                    <option>FITOKIMIA</option>
+                    <option>STANDARISASI BAHAN OBAT ALAM (SBOA)</option>
+                    <option>FTS STERIL</option>
+                    <option>COMDIS (COMPOUNDING & DISPENDING)</option>
+                    <option>FTS SEMI PADAT DAN CAIR</option>
+                    <option>PENELITIAN</option>
+
+                </select>
+
+            </div>
+
+            <!-- BARANG -->
             <!-- BARANG -->
             <div class="barang-box">
 
                 <h5 class="fw-bold mb-4">
-
                     📦 Pilih Barang
-
                 </h5>
 
-                <div class="row g-4">
+                <div id="barang-container">
 
-                    <div class="col-md-8">
+                    <div class="row g-4 barang-item mb-3">
 
-                        <label class="mb-2 fw-semibold">
+                        <div class="col-md-7">
 
-                            Barang
+                            <label class="mb-2 fw-semibold">
+                                Barang
+                            </label>
 
-                        </label>
+                            <select name="barang[0][id]"
+                                    class="form-select">
 
-                        <select name="barang[0][id]"
-                                class="form-select">
+                                @foreach($barang as $b)
 
-                            @foreach($barang as $b)
+                                    <option value="{{ $b->id }}">
 
-                                <option value="{{ $b->id }}">
+                                        {{ $b->nama_barang }}
+                                        (stok: {{ $b->stok }})
 
-                                    {{ $b->nama_barang }}
-                                    (stok: {{ $b->stok }})
+                                    </option>
 
-                                </option>
+                                @endforeach
 
-                            @endforeach
+                            </select>
 
-                        </select>
+                        </div>
 
-                    </div>
+                        <div class="col-md-3">
 
-                    <div class="col-md-4">
+                            <label class="mb-2 fw-semibold">
+                                Jumlah
+                            </label>
 
-                        <label class="mb-2 fw-semibold">
+                            <input type="number"
+                                name="barang[0][jumlah]"
+                                class="form-control"
+                                min="1"
+                                required>
 
-                            Jumlah
+                        </div>
 
-                        </label>
+                        <div class="col-md-2 d-flex align-items-end">
 
-                        <input type="number"
-                               name="barang[0][jumlah]"
-                               class="form-control"
-                               placeholder="Jumlah">
+                            <button type="button"
+                                    class="btn btn-danger remove-barang">
+
+                                Hapus
+
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
+
+                <button type="button"
+                        id="tambahBarang"
+                        class="btn btn-outline-primary mt-3">
+
+                    + Tambah Barang
+
+                </button>
 
             </div>
 
@@ -265,6 +326,79 @@
     </div>
 
 </div>
+
+<script>
+
+let index = 1;
+
+document.getElementById('tambahBarang')
+.addEventListener('click', function () {
+
+    let html = `
+        <div class="row g-4 barang-item mb-3">
+
+            <div class="col-md-7">
+
+                <select name="barang[${index}][id]"
+                        class="form-select">
+
+                    @foreach($barang as $b)
+
+                        <option value="{{ $b->id }}">
+
+                            {{ $b->nama_barang }}
+                            (stok: {{ $b->stok }})
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input type="number"
+                       name="barang[${index}][jumlah]"
+                       class="form-control"
+                       min="1"
+                       required>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button type="button"
+                        class="btn btn-danger remove-barang">
+
+                    Hapus
+
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document
+        .getElementById('barang-container')
+        .insertAdjacentHTML('beforeend', html);
+
+    index++;
+});
+
+document.addEventListener('click', function(e){
+
+    if(e.target.classList.contains('remove-barang')){
+
+        e.target
+         .closest('.barang-item')
+         .remove();
+    }
+});
+
+</script>
 
 </body>
 </html>
