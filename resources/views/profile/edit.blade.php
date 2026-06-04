@@ -194,12 +194,12 @@
             </div>
 
             {{-- JURUSAN --}}
+           @if($user->role == 'admin')
+
             <div class="mb-4">
 
                 <label class="form-label">
-
-                    Jurusan
-
+                    Profesi
                 </label>
 
                 <input type="text"
@@ -208,6 +208,41 @@
                     class="form-control">
 
             </div>
+
+            @else
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Jurusan
+                </label>
+
+                <input type="text"
+                    name="jurusan"
+                    value="{{ $user->jurusan }}"
+                    class="form-control">
+
+            </div>
+
+            @endif
+
+            {{-- KELAS --}}
+            @if($user->role == 'user')
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Kelas
+                </label>
+
+                <input type="text"
+                    name="kelas"
+                    value="{{ $user->kelas }}"
+                    class="form-control">
+
+            </div>
+
+            @endif
 
             {{-- BUTTON --}}
             <button type="submit"

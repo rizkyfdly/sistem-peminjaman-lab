@@ -227,21 +227,54 @@
 
                 </div>
 
+                <!-- JURUSAN -->
+
+                @if(auth()->user()->role == 'admin')
+
                 <div class="info-card">
 
                     <div class="info-label">
-
-                        Jurusan
-
+                        Profesi
                     </div>
 
                     <div class="info-value">
-
                         {{ auth()->user()->jurusan }}
-
                     </div>
 
                 </div>
+
+                @else
+
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Jurusan
+                    </div>
+
+                    <div class="info-value">
+                        {{ auth()->user()->jurusan }}
+                    </div>
+
+                </div>
+
+                @endif
+
+                <!-- KELAS -->
+                 @if(auth()->user()->role == 'user')
+
+                <div class="info-card">
+
+                    <div class="info-label">
+                        Kelas
+                    </div>
+
+                    <div class="info-value">
+                        {{ auth()->user()->kelas }}
+                    </div>
+
+                </div>
+
+                @endif
 
                 <!-- EMAIL -->
                 <div class="info-card">

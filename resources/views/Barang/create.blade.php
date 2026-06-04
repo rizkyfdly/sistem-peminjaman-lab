@@ -260,6 +260,9 @@
 
                         Gambar Barang
 
+                        <span class="text-muted fs-6">
+                            (ukuran gambar 7x9)
+
                     </label>
 
                     <input type="file"

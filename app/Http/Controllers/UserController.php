@@ -102,6 +102,7 @@ class UserController extends Controller
             'name'  => 'required',
             'email' => 'required|email',
             'nim_nip' => 'nullable|string|max:50',
+            'kelas' =>'nullable|string|max:50',
             'jurusan' => 'nullable|string|max:100',
             'foto'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -109,6 +110,7 @@ class UserController extends Controller
         $data = [
             'name'  => $request->name,
             'email' => $request->email,
+            'kelas' => $request->kelas,
             'nim_nip' => $request->nim_nip,
             'jurusan' => $request->jurusan,
         ];

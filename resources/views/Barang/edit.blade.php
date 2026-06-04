@@ -288,6 +288,8 @@
 
                         Gambar Barang
 
+                        <small>(Ukuran gambar 7x9)
+
                     </label>
 
                     <br>
